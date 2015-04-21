@@ -1,10 +1,10 @@
-### Backward Compatibility
+# Backward Compatibility
 
 The main goal of etcd 2.0 release is to improve cluster safety around bootstrapping and dynamic reconfiguration. To do this, we deprecated the old error-prone APIs and provide a new set of APIs.
 
 The other main focus of this release was a more reliable Raft implementation, but as this change is internal it should not have any notable effects to users.
 
-#### Command Line Flags Changes
+## Command Line Flags Changes
 
 The major flag changes are to mostly related to bootstrapping. The `initial-*` flags provide an improved way to specify the required criteria to start the cluster. The advertised URLs now support a list of values instead of a single value, which allows etcd users to gracefully migrate to the new set of IANA-assigned ports (2379/client and 2380/peers) while maintaining backward compatibility with the old ports.
 
@@ -20,16 +20,56 @@ The major flag changes are to mostly related to bootstrapping. The `initial-*` f
 The documentation of new command line flags can be found at
 https://github.com/coreos/etcd/blob/master/Documentation/configuration.md.
 
-#### Data Dir
-- Default data dir location has changed from {$hostname}.etcd to {name}.etcd.
+## Data Directory Naming
 
-- The disk format within the data dir has changed. etcd 2.0 should be able to auto upgrade the old data format. Instructions on doing so manually are in the [migration tool doc][migrationtooldoc].
+The default data dir location has changed from {$hostname}.etcd to {name}.etcd.
 
-[migrationtooldoc]: https://github.com/coreos/etcd/blob/master/Documentation/0_4_migration_tool.md
+## Data Directory Migration
 
-#### Key-Value API
+The disk format within the data directory changed with etcd 2.0.
+If you run etcd 2.0 on an etcd 0.4 data directory it will automatically migrate the data and start.
+You will want to coordinate this upgrade by walking through each of your machines in the cluster, stopping etcd 0.4 and then starting etcd 2.0.
+If you would rather manually do the migration, to test it out first in another environment, you can use the [migration tool doc][migrationtooldoc].
 
-##### Read consistency flag
+[migrationtooldoc]: ../tools/etcd-migrate/README.md
+
+## Snapshot Migration
+
+If you are only interested in the data in etcd you can migrate a snapshot of your data from a v0.4.9+ cluster into a new etcd 2.0 cluster using a snapshot migration.
+The advantage of this method is that you are directly dumping only the etcd data so you can run your old and new cluster side-by-side, snapshot the data, import it and then point your applications at this cluster.
+The disadvantage is that the etcd indexes of your data will change which may confuse applications that use etcd.
+
+To get started get the newest data snapshot from the 0.4.9+ cluster:
+
+```
+curl http://cluster.example.com:4001/v2/migration/snapshot > backup.snap
+```
+
+Now, import the snapshot into your new cluster:
+
+```
+etcdctl -C new_cluster.example.com import --snap backup.snap
+```
+
+If you have a large amount of data, you can specify more concurrent works to copy data in parallel by using `-c` flag.
+If you have hidden keys to copy, you can use `--hidden` flag to specify.
+
+And the data will quickly copy into the new cluster:
+
+```
+entering dir: /
+entering dir: /foo
+entering dir: /foo/bar
+copying key: /foo/bar/1 1
+entering dir: /
+entering dir: /foo2
+entering dir: /foo2/bar2
+copying key: /foo2/bar2/2 2
+```
+
+## Key-Value API
+
+### Read consistency flag
 
 The consistent flag for read operations is removed in etcd 2.0.0. The normal read operations provides the same consistency guarantees with the 0.4.6 read operations with consistent flag set.
 
@@ -46,7 +86,7 @@ Reads do not provide linearizability. If you want linearizabilable read, you nee
 We added an option for a consistent read in the old version of etcd since etcd 0.x redirects the write request to the leader. When the user get back the result from the leader, the member it sent the request to originally might not apply the write request yet. With the consistent flag set to true, the client will always send read request to the leader. So one client should be able to see its last write when consistent=true is enabled. There is no order guarantees among different clients.
 
 
-#### Standby
+## Standby
 
 etcd 0.4’s standby mode has been deprecated. [Proxy mode][proxymode] is introduced to solve a subset of problems standby was solving.
 
@@ -56,18 +96,18 @@ Proxy mode in 2.0 will provide similar functionality, and with improved control 
 
 [proxymode]: https://github.com/coreos/etcd/blob/master/Documentation/proxy.md
 
-#### Discovery Service
+## Discovery Service
 
 A size key needs to be provided inside a [discovery token][discoverytoken].
 [discoverytoken]: https://github.com/coreos/etcd/blob/master/Documentation/clustering.md#custom-etcd-discovery-service
 
-#### HTTP Admin API
+## HTTP Admin API
 
 `v2/admin` on peer url and `v2/keys/_etcd` are unified under the new [v2/member API][memberapi] to better explain which machines are part of an etcd cluster, and to simplify the keyspace for all your use cases.
 
 [memberapi]: https://github.com/coreos/etcd/blob/master/Documentation/other_apis.md
 
-#### HTTP Key Value API
+## HTTP Key Value API
 - The follower can now transparently proxy write equests to the leader. Clients will no longer see 307 redirections to the leader from etcd.
 
 - Expiration time is in UTC instead of local time.

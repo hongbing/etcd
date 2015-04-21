@@ -23,6 +23,8 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"sync"
+	"time"
 
 	"github.com/coreos/etcd/pkg/fileutil"
 	"github.com/coreos/etcd/pkg/pbutil"
@@ -40,6 +42,10 @@ const (
 
 	// the owner can make/remove files inside the directory
 	privateDirMode = 0700
+
+	// the expected size of each wal segment file.
+	// the actual size might be bigger than it.
+	segmentSizeBytes = 64 * 1000 * 1000 // 64MB
 )
 
 var (
@@ -64,6 +70,7 @@ type WAL struct {
 	start   walpb.Snapshot // snapshot to start reading
 	decoder *decoder       // decoder to decode records
 
+	mu      sync.Mutex
 	f       *os.File // underlay file opened for appending, sync
 	seq     uint64   // sequence of the wal file currently used for writes
 	enti    uint64   // index of the last entry saved to the wal
@@ -208,6 +215,9 @@ func openAtIndex(dirpath string, snap walpb.Snapshot, all bool) (*WAL, error) {
 // TODO: maybe loose the checking of match.
 // After ReadAll, the WAL will be ready for appending new records.
 func (w *WAL) ReadAll() (metadata []byte, state raftpb.HardState, ents []raftpb.Entry, err error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
 	rec := &walpb.Record{}
 	decoder := w.decoder
 
@@ -269,34 +279,33 @@ func (w *WAL) ReadAll() (metadata []byte, state raftpb.HardState, ents []raftpb.
 	// create encoder (chain crc with the decoder), enable appending
 	w.encoder = newEncoder(w.f, w.decoder.lastCRC())
 	w.decoder = nil
+	lastIndexSaved.Set(float64(w.enti))
 	return metadata, state, ents, err
 }
 
-// Cut closes current file written and creates a new one ready to append.
-func (w *WAL) Cut() error {
-	// create a new wal file with name sequence + 1
+// cut closes current file written and creates a new one ready to append.
+// cut first creates a temp wal file and writes necessary headers into it.
+// Then cut atomtically rename temp wal file to a wal file.
+func (w *WAL) cut() error {
+	// close old wal file
+	if err := w.sync(); err != nil {
+		return err
+	}
+	if err := w.f.Close(); err != nil {
+		return err
+	}
+
 	fpath := path.Join(w.dir, walName(w.seq+1, w.enti+1))
-	f, err := os.OpenFile(fpath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
+	ftpath := fpath + ".tmp"
+
+	// create a temp wal file with name sequence + 1, or tuncate the existing one
+	ft, err := os.OpenFile(ftpath, os.O_WRONLY|os.O_APPEND|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return err
 	}
-	l, err := fileutil.NewLock(f.Name())
-	if err != nil {
-		return err
-	}
-	err = l.Lock()
-	if err != nil {
-		return err
-	}
-	w.locks = append(w.locks, l)
-	if err = w.sync(); err != nil {
-		return err
-	}
-	w.f.Close()
 
 	// update writer and save the previous crc
-	w.f = f
-	w.seq++
+	w.f = ft
 	prevCrc := w.encoder.crc.Sum32()
 	w.encoder = newEncoder(w.f, prevCrc)
 	if err := w.saveCrc(prevCrc); err != nil {
@@ -308,7 +317,45 @@ func (w *WAL) Cut() error {
 	if err := w.saveState(&w.state); err != nil {
 		return err
 	}
-	return w.sync()
+	// close temp wal file
+	if err := w.sync(); err != nil {
+		return err
+	}
+	if err := w.f.Close(); err != nil {
+		return err
+	}
+
+	// atomically move temp wal file to wal file
+	if err := os.Rename(ftpath, fpath); err != nil {
+		return err
+	}
+
+	// open the wal file and update writer again
+	f, err := os.OpenFile(fpath, os.O_WRONLY|os.O_APPEND, 0600)
+	if err != nil {
+		return err
+	}
+	w.f = f
+	prevCrc = w.encoder.crc.Sum32()
+	w.encoder = newEncoder(w.f, prevCrc)
+
+	// lock the new wal file
+	l, err := fileutil.NewLock(f.Name())
+	if err != nil {
+		return err
+	}
+	err = l.Lock()
+	if err != nil {
+		return err
+	}
+	w.locks = append(w.locks, l)
+
+	// increase the wal seq
+	w.seq++
+
+	log.Printf("wal: segmented wal file %v is created", fpath)
+
+	return nil
 }
 
 func (w *WAL) sync() error {
@@ -317,34 +364,58 @@ func (w *WAL) sync() error {
 			return err
 		}
 	}
-	return w.f.Sync()
+	start := time.Now()
+	err := w.f.Sync()
+	syncDurations.Observe(float64(time.Since(start).Nanoseconds() / int64(time.Microsecond)))
+	return err
 }
 
-// ReleaseLockTo releases the locks w is holding, which
-// have index smaller or equal to the given index.
+// ReleaseLockTo releases the locks, which has smaller index than the given index
+// except the largest one among them.
+// For example, if WAL is holding lock 1,2,3,4,5,6, ReleaseLockTo(4) will release
+// lock 1,2 but keep 3. ReleaseLockTo(5) will release 1,2,3 but keep 4.
 func (w *WAL) ReleaseLockTo(index uint64) error {
-	for _, l := range w.locks {
-		_, i, err := parseWalName(path.Base(l.Name()))
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
+	var smaller int
+	found := false
+
+	for i, l := range w.locks {
+		_, lockIndex, err := parseWalName(path.Base(l.Name()))
 		if err != nil {
 			return err
 		}
-		if i > index {
-			return nil
+		if lockIndex >= index {
+			smaller = i - 1
+			found = true
+			break
 		}
-		err = l.Unlock()
-		if err != nil {
-			return err
-		}
-		err = l.Destroy()
-		if err != nil {
-			return err
-		}
-		w.locks = w.locks[1:]
 	}
+
+	// if no lock index is greater than the release index, we can
+	// release lock upto the last one(excluding).
+	if !found && len(w.locks) != 0 {
+		smaller = len(w.locks) - 1
+	}
+
+	if smaller <= 0 {
+		return nil
+	}
+
+	for i := 0; i < smaller; i++ {
+		w.locks[i].Unlock()
+		w.locks[i].Destroy()
+	}
+	w.locks = w.locks[smaller:]
+
 	return nil
 }
 
 func (w *WAL) Close() error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
 	if w.f != nil {
 		if err := w.sync(); err != nil {
 			return err
@@ -362,12 +433,14 @@ func (w *WAL) Close() error {
 }
 
 func (w *WAL) saveEntry(e *raftpb.Entry) error {
+	// TODO: add MustMarshalTo to reduce one allocation.
 	b := pbutil.MustMarshal(e)
 	rec := &walpb.Record{Type: entryType, Data: b}
 	if err := w.encoder.encode(rec); err != nil {
 		return err
 	}
 	w.enti = e.Index
+	lastIndexSaved.Set(float64(w.enti))
 	return nil
 }
 
@@ -382,19 +455,39 @@ func (w *WAL) saveState(s *raftpb.HardState) error {
 }
 
 func (w *WAL) Save(st raftpb.HardState, ents []raftpb.Entry) error {
-	// TODO(xiangli): no more reference operator
-	if err := w.saveState(&st); err != nil {
-		return err
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
+	// short cut, do not call sync
+	if raft.IsEmptyHardState(st) && len(ents) == 0 {
+		return nil
 	}
+
+	// TODO(xiangli): no more reference operator
 	for i := range ents {
 		if err := w.saveEntry(&ents[i]); err != nil {
 			return err
 		}
 	}
-	return w.sync()
+	if err := w.saveState(&st); err != nil {
+		return err
+	}
+
+	fstat, err := w.f.Stat()
+	if err != nil {
+		return err
+	}
+	if fstat.Size() < segmentSizeBytes {
+		return w.sync()
+	}
+	// TODO: add a test for this code path when refactoring the tests
+	return w.cut()
 }
 
 func (w *WAL) SaveSnapshot(e walpb.Snapshot) error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
 	b := pbutil.MustMarshal(&e)
 	rec := &walpb.Record{Type: snapshotType, Data: b}
 	if err := w.encoder.encode(rec); err != nil {
@@ -404,6 +497,7 @@ func (w *WAL) SaveSnapshot(e walpb.Snapshot) error {
 	if w.enti < e.Index {
 		w.enti = e.Index
 	}
+	lastIndexSaved.Set(float64(w.enti))
 	return w.sync()
 }
 

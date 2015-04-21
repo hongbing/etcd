@@ -31,6 +31,7 @@ import (
 	"github.com/coreos/etcd/etcdserver"
 	"github.com/coreos/etcd/etcdserver/etcdhttp"
 	"github.com/coreos/etcd/pkg/cors"
+	"github.com/coreos/etcd/pkg/fileutil"
 	"github.com/coreos/etcd/pkg/osutil"
 	"github.com/coreos/etcd/pkg/transport"
 	"github.com/coreos/etcd/pkg/types"
@@ -38,22 +39,44 @@ import (
 	"github.com/coreos/etcd/rafthttp"
 )
 
+type dirType string
+
 const (
 	// the owner can make/remove files inside the directory
 	privateDirMode = 0700
+)
+
+var (
+	dirMember = dirType("member")
+	dirProxy  = dirType("proxy")
+	dirEmpty  = dirType("empty")
 )
 
 func Main() {
 	cfg := NewConfig()
 	err := cfg.Parse(os.Args[1:])
 	if err != nil {
-		log.Printf("etcd: error verifying flags, %v", err)
+		log.Printf("etcd: error verifying flags, %v. See 'etcd -help'.", err)
 		os.Exit(2)
 	}
 
 	var stopped <-chan struct{}
 
-	shouldProxy := cfg.isProxy()
+	if cfg.name != defaultName && cfg.initialCluster == initialClusterFromName(defaultName) {
+		cfg.initialCluster = initialClusterFromName(cfg.name)
+	}
+
+	if cfg.dir == "" {
+		cfg.dir = fmt.Sprintf("%v.etcd", cfg.name)
+		log.Printf("etcd: no data-dir provided, using default data-dir ./%s", cfg.dir)
+	}
+
+	which := identifyDataDirOrDie(cfg.dir)
+	if which != dirEmpty {
+		log.Printf("etcd: already initialized as %v before, starting as etcd %v...", which, which)
+	}
+
+	shouldProxy := cfg.isProxy() || which == dirProxy
 	if !shouldProxy {
 		stopped, err = startEtcd(cfg)
 		if err == discovery.ErrFullCluster && cfg.shouldFallbackToProxy() {
@@ -87,12 +110,7 @@ func startEtcd(cfg *config) (<-chan struct{}, error) {
 		return nil, fmt.Errorf("error setting up initial cluster: %v", err)
 	}
 
-	if cfg.dir == "" {
-		cfg.dir = fmt.Sprintf("%v.etcd", cfg.name)
-		log.Printf("no data-dir provided, using default data-dir ./%s", cfg.dir)
-	}
-
-	pt, err := transport.NewTimeoutTransport(cfg.peerTLSInfo, rafthttp.ConnReadTimeout, rafthttp.ConnWriteTimeout)
+	pt, err := transport.NewTimeoutTransport(cfg.peerTLSInfo, rafthttp.DialTimeout, rafthttp.ConnReadTimeout, rafthttp.ConnWriteTimeout)
 	if err != nil {
 		return nil, err
 	}
@@ -218,10 +236,6 @@ func startProxy(cfg *config) error {
 		return err
 	}
 
-	if cfg.dir == "" {
-		cfg.dir = fmt.Sprintf("%v.etcd", cfg.name)
-		log.Printf("no proxy data-dir provided, using default proxy data-dir ./%s", cfg.dir)
-	}
 	cfg.dir = path.Join(cfg.dir, "proxy")
 	err = os.MkdirAll(cfg.dir, 0700)
 	if err != nil {
@@ -339,4 +353,39 @@ func genClusterString(name string, urls types.URLs) string {
 		addrs = append(addrs, fmt.Sprintf("%v=%v", name, u.String()))
 	}
 	return strings.Join(addrs, ",")
+}
+
+// identifyDataDirOrDie returns the type of the data dir.
+// Dies if the datadir is invalid.
+func identifyDataDirOrDie(dir string) dirType {
+	names, err := fileutil.ReadDir(dir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return dirEmpty
+		}
+		log.Fatalf("etcd: error listing data dir: %s", dir)
+	}
+
+	var m, p bool
+	for _, name := range names {
+		switch dirType(name) {
+		case dirMember:
+			m = true
+		case dirProxy:
+			p = true
+		default:
+			log.Printf("etcd: found invalid file/dir %s under data dir %s (Ignore this if you are upgrading etcd)", name, dir)
+		}
+	}
+
+	if m && p {
+		log.Fatal("etcd: invalid datadir. Both member and proxy directories exist.")
+	}
+	if m {
+		return dirMember
+	}
+	if p {
+		return dirProxy
+	}
+	return dirEmpty
 }

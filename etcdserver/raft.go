@@ -16,9 +16,11 @@ package etcdserver
 
 import (
 	"encoding/json"
+	"expvar"
 	"log"
 	"os"
 	"sort"
+	"sync/atomic"
 	"time"
 
 	pb "github.com/coreos/etcd/etcdserver/etcdserverpb"
@@ -31,16 +33,59 @@ import (
 	"github.com/coreos/etcd/wal/walpb"
 )
 
+const (
+	// Number of entries for slow follower to catch-up after compacting
+	// the raft storage entries.
+	// We expect the follower has a millisecond level latency with the leader.
+	// The max throughput is around 10K. Keep a 5K entries is enough for helping
+	// follower to catch up.
+	numberOfCatchUpEntries = 5000
+
+	// The max throughput of etcd will not exceed 100MB/s (100K * 1KB value).
+	// Assuming the RTT is around 10ms, 1MB max size is large enough.
+	maxSizePerMsg = 1 * 1024 * 1024
+	// Never overflow the rafthttp buffer, which is 4096.
+	// TODO: a better const?
+	maxInflightMsgs = 4096 / 8
+)
+
+var (
+	// indirection for expvar func interface
+	// expvar panics when publishing duplicate name
+	// expvar does not support remove a registered name
+	// so only register a func that calls raftStatus
+	// and change raftStatus as we need.
+	raftStatus func() raft.Status
+)
+
+func init() {
+	expvar.Publish("raft.status", expvar.Func(func() interface{} { return raftStatus() }))
+}
+
 type RaftTimer interface {
 	Index() uint64
 	Term() uint64
 }
 
+// apply contains entries, snapshot be applied.
+// After applied all the items, the application needs
+// to send notification to done chan.
+type apply struct {
+	entries  []raftpb.Entry
+	snapshot raftpb.Snapshot
+	done     chan struct{}
+}
+
 type raftNode struct {
 	raft.Node
 
-	// config
-	snapCount uint64 // number of entries to trigger a snapshot
+	// a chan to send out apply
+	applyc chan apply
+
+	// TODO: remove the etcdserver related logic from raftNode
+	// TODO: add a state machine interface to apply the commit entries
+	// and do snapshot/recover
+	s *EtcdServer
 
 	// utility
 	ticker      <-chan time.Time
@@ -56,6 +101,84 @@ type raftNode struct {
 	index uint64
 	term  uint64
 	lead  uint64
+
+	stopped chan struct{}
+	done    chan struct{}
+}
+
+func (r *raftNode) run() {
+	r.stopped = make(chan struct{})
+	r.done = make(chan struct{})
+
+	var syncC <-chan time.Time
+
+	defer r.stop()
+	for {
+		select {
+		case <-r.ticker:
+			r.Tick()
+		case rd := <-r.Ready():
+			if rd.SoftState != nil {
+				atomic.StoreUint64(&r.lead, rd.SoftState.Lead)
+				if rd.RaftState == raft.StateLeader {
+					syncC = r.s.SyncTicker
+					// TODO: remove the nil checking
+					// current test utility does not provide the stats
+					if r.s.stats != nil {
+						r.s.stats.BecomeLeader()
+					}
+				} else {
+					syncC = nil
+				}
+			}
+
+			apply := apply{
+				entries:  rd.CommittedEntries,
+				snapshot: rd.Snapshot,
+				done:     make(chan struct{}),
+			}
+
+			select {
+			case r.applyc <- apply:
+			case <-r.stopped:
+				return
+			}
+
+			if !raft.IsEmptySnap(rd.Snapshot) {
+				if err := r.storage.SaveSnap(rd.Snapshot); err != nil {
+					log.Fatalf("etcdraft: save snapshot error: %v", err)
+				}
+				r.raftStorage.ApplySnapshot(rd.Snapshot)
+				log.Printf("etcdraft: applied incoming snapshot at index %d", rd.Snapshot.Metadata.Index)
+			}
+			if err := r.storage.Save(rd.HardState, rd.Entries); err != nil {
+				log.Fatalf("etcdraft: save state and entries error: %v", err)
+			}
+			r.raftStorage.Append(rd.Entries)
+
+			r.s.send(rd.Messages)
+
+			<-apply.done
+			r.Advance()
+		case <-syncC:
+			r.s.sync(defaultSyncTimeout)
+		case <-r.stopped:
+			return
+		}
+	}
+}
+
+func (r *raftNode) apply() chan apply {
+	return r.applyc
+}
+
+func (r *raftNode) stop() {
+	r.Stop()
+	r.transport.Stop()
+	if err := r.storage.Close(); err != nil {
+		log.Panicf("etcdraft: close storage error: %v", err)
+	}
+	close(r.done)
 }
 
 // for testing
@@ -95,7 +218,16 @@ func startNode(cfg *ServerConfig, ids []types.ID) (id types.ID, n raft.Node, s *
 	id = member.ID
 	log.Printf("etcdserver: start member %s in cluster %s", id, cfg.Cluster.ID())
 	s = raft.NewMemoryStorage()
-	n = raft.StartNode(uint64(id), peers, cfg.ElectionTicks, 1, s)
+	c := &raft.Config{
+		ID:              uint64(id),
+		ElectionTick:    cfg.ElectionTicks,
+		HeartbeatTick:   1,
+		Storage:         s,
+		MaxSizePerMsg:   maxSizePerMsg,
+		MaxInflightMsgs: maxInflightMsgs,
+	}
+	n = raft.StartNode(c, peers)
+	raftStatus = n.Status
 	return
 }
 
@@ -114,7 +246,16 @@ func restartNode(cfg *ServerConfig, snapshot *raftpb.Snapshot) (types.ID, raft.N
 	}
 	s.SetHardState(st)
 	s.Append(ents)
-	n := raft.RestartNode(uint64(id), cfg.ElectionTicks, 1, s, 0)
+	c := &raft.Config{
+		ID:              uint64(id),
+		ElectionTick:    cfg.ElectionTicks,
+		HeartbeatTick:   1,
+		Storage:         s,
+		MaxSizePerMsg:   maxSizePerMsg,
+		MaxInflightMsgs: maxInflightMsgs,
+	}
+	n := raft.RestartNode(c)
+	raftStatus = n.Status
 	return id, n, s, w
 }
 
@@ -155,7 +296,16 @@ func restartAsStandaloneNode(cfg *ServerConfig, snapshot *raftpb.Snapshot) (type
 	}
 	s.SetHardState(st)
 	s.Append(ents)
-	n := raft.RestartNode(uint64(id), cfg.ElectionTicks, 1, s, 0)
+	c := &raft.Config{
+		ID:              uint64(id),
+		ElectionTick:    cfg.ElectionTicks,
+		HeartbeatTick:   1,
+		Storage:         s,
+		MaxSizePerMsg:   maxSizePerMsg,
+		MaxInflightMsgs: maxInflightMsgs,
+	}
+	n := raft.RestartNode(c)
+	raftStatus = n.Status
 	return id, n, s, w
 }
 

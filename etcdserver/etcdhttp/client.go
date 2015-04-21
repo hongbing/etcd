@@ -29,13 +29,14 @@ import (
 	"time"
 
 	"github.com/coreos/etcd/Godeps/_workspace/src/github.com/jonboulle/clockwork"
+	"github.com/coreos/etcd/Godeps/_workspace/src/github.com/prometheus/client_golang/prometheus"
 	"github.com/coreos/etcd/Godeps/_workspace/src/golang.org/x/net/context"
 	etcdErr "github.com/coreos/etcd/error"
 	"github.com/coreos/etcd/etcdserver"
 	"github.com/coreos/etcd/etcdserver/etcdhttp/httptypes"
 	"github.com/coreos/etcd/etcdserver/etcdserverpb"
+	"github.com/coreos/etcd/etcdserver/security"
 	"github.com/coreos/etcd/etcdserver/stats"
-	"github.com/coreos/etcd/pkg/metrics"
 	"github.com/coreos/etcd/pkg/types"
 	"github.com/coreos/etcd/raft"
 	"github.com/coreos/etcd/store"
@@ -43,18 +44,23 @@ import (
 )
 
 const (
+	securityPrefix           = "/v2/security"
 	keysPrefix               = "/v2/keys"
 	deprecatedMachinesPrefix = "/v2/machines"
 	membersPrefix            = "/v2/members"
 	statsPrefix              = "/v2/stats"
-	statsPath                = "/stats"
+	varsPath                 = "/debug/vars"
+	metricsPath              = "/metrics"
 	healthPath               = "/health"
 	versionPath              = "/version"
 )
 
 // NewClientHandler generates a muxed http.Handler with the given parameters to serve etcd client requests.
 func NewClientHandler(server *etcdserver.EtcdServer) http.Handler {
+	sec := security.NewStore(server, defaultServerTimeout)
+
 	kh := &keysHandler{
+		sec:         sec,
 		server:      server,
 		clusterInfo: server.Cluster,
 		timer:       server,
@@ -66,12 +72,18 @@ func NewClientHandler(server *etcdserver.EtcdServer) http.Handler {
 	}
 
 	mh := &membersHandler{
+		sec:         sec,
 		server:      server,
 		clusterInfo: server.Cluster,
 		clock:       clockwork.NewRealClock(),
 	}
 
 	dmh := &deprecatedMachinesHandler{
+		clusterInfo: server.Cluster,
+	}
+
+	sech := &securityHandler{
+		sec:         sec,
 		clusterInfo: server.Cluster,
 	}
 
@@ -84,14 +96,17 @@ func NewClientHandler(server *etcdserver.EtcdServer) http.Handler {
 	mux.HandleFunc(statsPrefix+"/store", sh.serveStore)
 	mux.HandleFunc(statsPrefix+"/self", sh.serveSelf)
 	mux.HandleFunc(statsPrefix+"/leader", sh.serveLeader)
-	mux.HandleFunc(statsPath, serveStats)
+	mux.HandleFunc(varsPath, serveVars)
+	mux.Handle(metricsPath, prometheus.Handler())
 	mux.Handle(membersPrefix, mh)
 	mux.Handle(membersPrefix+"/", mh)
 	mux.Handle(deprecatedMachinesPrefix, dmh)
+	handleSecurity(mux, sech)
 	return mux
 }
 
 type keysHandler struct {
+	sec         *security.Store
 	server      etcdserver.Server
 	clusterInfo etcdserver.ClusterInfo
 	timer       etcdserver.RaftTimer
@@ -102,6 +117,7 @@ func (h *keysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !allowMethod(w, r.Method, "HEAD", "GET", "PUT", "POST", "DELETE") {
 		return
 	}
+
 	w.Header().Set("X-Etcd-Cluster-ID", h.clusterInfo.ID().String())
 
 	ctx, cancel := context.WithTimeout(context.Background(), h.timeout)
@@ -112,6 +128,11 @@ func (h *keysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err)
 		return
 	}
+	// The path must be valid at this point (we've parsed the request successfully).
+	if !hasKeyPrefixAccess(h.sec, r, r.URL.Path[len(keysPrefix):]) {
+		writeNoAuth(w)
+		return
+	}
 
 	resp, err := h.server.Do(ctx, rr)
 	if err != nil {
@@ -119,7 +140,6 @@ func (h *keysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err)
 		return
 	}
-
 	switch {
 	case resp.Event != nil:
 		if err := writeKeyEvent(w, resp.Event, h.timer); err != nil {
@@ -148,6 +168,7 @@ func (h *deprecatedMachinesHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 }
 
 type membersHandler struct {
+	sec         *security.Store
 	server      etcdserver.Server
 	clusterInfo etcdserver.ClusterInfo
 	clock       clockwork.Clock
@@ -155,6 +176,10 @@ type membersHandler struct {
 
 func (h *membersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !allowMethod(w, r.Method, "GET", "POST", "DELETE", "PUT") {
+		return
+	}
+	if !hasWriteRootAccess(h.sec, r) {
+		writeNoAuth(w)
 		return
 	}
 	w.Header().Set("X-Etcd-Cluster-ID", h.clusterInfo.ID().String())
@@ -286,12 +311,11 @@ func (h *statsHandler) serveLeader(w http.ResponseWriter, r *http.Request) {
 	w.Write(stats)
 }
 
-func serveStats(w http.ResponseWriter, r *http.Request) {
+func serveVars(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	// TODO: getting one key or a prefix of keys based on path
 	fmt.Fprintf(w, "{\n")
 	first := true
-	metrics.Do(func(kv expvar.KeyValue) {
+	expvar.Do(func(kv expvar.KeyValue) {
 		if !first {
 			fmt.Fprintf(w, ",\n")
 		}
@@ -334,7 +358,7 @@ func serveVersion(w http.ResponseWriter, r *http.Request) {
 	if !allowMethod(w, r.Method, "GET") {
 		return
 	}
-	fmt.Fprintf(w, `{"releaseVersion":"%s","internalVersion":"%s"}`, version.Version, version.InternalVersion)
+	w.Write(version.MarshalJSON())
 }
 
 // parseKeyRequest converts a received http.Request on keysPrefix to

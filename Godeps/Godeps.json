@@ -6,8 +6,9 @@
 	],
 	"Deps": [
 		{
-			"ImportPath": "code.google.com/p/gogoprotobuf/proto",
-			"Rev": "7fd1620f09261338b6b1ca1289ace83aee0ec946"
+			"ImportPath": "code.google.com/p/goprotobuf/proto",
+			"Comment": "go.r60-163",
+			"Rev": "9352842ae63ee1d7e74e074ce7bb10370c4b6b9e"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
@@ -20,17 +21,70 @@
 			"Rev": "6aa2da5a7a905609c93036b9307185a04a5a84a5"
 		},
 		{
+			"ImportPath": "github.com/gogo/protobuf/proto",
+			"Rev": "bc946d07d1016848dfd2507f90f0859c9471681e"
+		},
+		{
+			"ImportPath": "github.com/golang/protobuf/proto",
+			"Rev": "5677a0e3d5e89854c9974e1256839ee23f8233ca"
+		},
+		{
 			"ImportPath": "github.com/jonboulle/clockwork",
 			"Rev": "72f9bd7c4e0c2a40055ab3d0f09654f730cce982"
+		},
+		{
+			"ImportPath": "github.com/matttproud/golang_protobuf_extensions/ext",
+			"Rev": "7a864a042e844af638df17ebbabf8183dace556a"
+		},
+		{
+			"ImportPath": "github.com/prometheus/client_golang/_vendor/goautoneg",
+			"Comment": "0.1.0-22-g70f5497",
+			"Rev": "70f54973fb9187e8773d738cb6ef6881333f5f25"
+		},
+		{
+			"ImportPath": "github.com/prometheus/client_golang/_vendor/perks/quantile",
+			"Comment": "0.1.0-22-g70f5497",
+			"Rev": "70f54973fb9187e8773d738cb6ef6881333f5f25"
+		},
+		{
+			"ImportPath": "github.com/prometheus/client_golang/model",
+			"Comment": "0.1.0-22-g70f5497",
+			"Rev": "70f54973fb9187e8773d738cb6ef6881333f5f25"
+		},
+		{
+			"ImportPath": "github.com/prometheus/client_golang/prometheus",
+			"Comment": "0.1.0-22-g70f5497",
+			"Rev": "70f54973fb9187e8773d738cb6ef6881333f5f25"
+		},
+		{
+			"ImportPath": "github.com/prometheus/client_golang/text",
+			"Comment": "0.1.0-22-g70f5497",
+			"Rev": "70f54973fb9187e8773d738cb6ef6881333f5f25"
+		},
+		{
+			"ImportPath": "github.com/prometheus/client_model/go",
+			"Comment": "model-0.0.2-12-gfa8ad6f",
+			"Rev": "fa8ad6fec33561be4280a8f0514318c79d7f6cb6"
+		},
+		{
+			"ImportPath": "github.com/prometheus/procfs",
+			"Rev": "92faa308558161acab0ada1db048e9996ecec160"
 		},
 		{
 			"ImportPath": "github.com/stretchr/testify/assert",
 			"Rev": "9cc77fa25329013ce07362c7742952ff887361f2"
 		},
 		{
+			"ImportPath": "golang.org/x/crypto/bcrypt",
+			"Rev": "1351f936d976c60a0a48d728281922cf63eafb8d"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/blowfish",
+			"Rev": "1351f936d976c60a0a48d728281922cf63eafb8d"
+		},
+		{
 			"ImportPath": "golang.org/x/net/context",
-			"Comment": "null-220",
-			"Rev": "c5a46024776ec35eb562fa9226968b9d543bb13a"
+			"Rev": "7dbad50ab5b31073856416cdcfeb2796d682f844"
 		}
 	]
 }

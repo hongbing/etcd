@@ -96,8 +96,9 @@ func TestClusterFromStore(t *testing.T) {
 	for i, tt := range tests {
 		hc := newTestCluster(nil)
 		hc.SetStore(store.New())
-		for _, m := range tt.mems {
-			hc.AddMember(m)
+		hc.SetTransport(&nopTransporter{})
+		for j, m := range tt.mems {
+			hc.AddMember(m, uint64(j))
 		}
 		c := NewClusterFromStore("abc", hc.store)
 		if c.token != "abc" {
@@ -357,11 +358,12 @@ func TestClusterValidateAndAssignIDs(t *testing.T) {
 func TestClusterValidateConfigurationChange(t *testing.T) {
 	cl := newCluster("")
 	cl.SetStore(store.New())
+	cl.SetTransport(&nopTransporter{})
 	for i := 1; i <= 4; i++ {
 		attr := RaftAttributes{PeerURLs: []string{fmt.Sprintf("http://127.0.0.1:%d", i)}}
-		cl.AddMember(&Member{ID: types.ID(i), RaftAttributes: attr})
+		cl.AddMember(&Member{ID: types.ID(i), RaftAttributes: attr}, uint64(i))
 	}
-	cl.RemoveMember(4)
+	cl.RemoveMember(4, 5)
 
 	attr := RaftAttributes{PeerURLs: []string{fmt.Sprintf("http://127.0.0.1:%d", 1)}}
 	ctx, err := json.Marshal(&Member{ID: types.ID(5), RaftAttributes: attr})
@@ -489,7 +491,8 @@ func TestClusterGenID(t *testing.T) {
 	previd := cs.ID()
 
 	cs.SetStore(&storeRecorder{})
-	cs.AddMember(newTestMember(3, nil, "", nil))
+	cs.SetTransport(&nopTransporter{})
+	cs.AddMember(newTestMember(3, nil, "", nil), 1)
 	cs.genID()
 	if cs.ID() == previd {
 		t.Fatalf("cluster.ID = %v, want not %v", cs.ID(), previd)
@@ -532,7 +535,8 @@ func TestClusterAddMember(t *testing.T) {
 	st := &storeRecorder{}
 	c := newTestCluster(nil)
 	c.SetStore(st)
-	c.AddMember(newTestMember(1, nil, "node1", nil))
+	c.SetTransport(&nopTransporter{})
+	c.AddMember(newTestMember(1, nil, "node1", nil), 1)
 
 	wactions := []testutil.Action{
 		{
@@ -590,7 +594,7 @@ func TestClusterString(t *testing.T) {
 			),
 			3: newTestMember(
 				3,
-				[]string{"http://3.3.3.3:1234", "http://127.0.0.1:7001"},
+				[]string{"http://3.3.3.3:1234", "http://127.0.0.1:2380"},
 				"ghi",
 				nil,
 			),
@@ -609,7 +613,7 @@ func TestClusterString(t *testing.T) {
 			),
 		},
 	}
-	w := "abc=http://0.0.0.0:0000,abc=http://1.1.1.1:1111,def=http://2.2.2.2:2222,ghi=http://127.0.0.1:7001,ghi=http://3.3.3.3:1234"
+	w := "abc=http://0.0.0.0:0000,abc=http://1.1.1.1:1111,def=http://2.2.2.2:2222,ghi=http://127.0.0.1:2380,ghi=http://3.3.3.3:1234"
 	if g := cls.String(); g != w {
 		t.Fatalf("Cluster.String():\ngot  %#v\nwant %#v", g, w)
 	}
@@ -617,10 +621,14 @@ func TestClusterString(t *testing.T) {
 }
 
 func TestClusterRemoveMember(t *testing.T) {
-	st := &storeRecorder{}
 	c := newTestCluster(nil)
+	c.SetStore(&storeRecorder{})
+	c.SetTransport(&nopTransporter{})
+	c.AddMember(newTestMember(1, nil, "", nil), 1)
+
+	st := &storeRecorder{}
 	c.SetStore(st)
-	c.RemoveMember(1)
+	c.RemoveMember(1, 2)
 
 	wactions := []testutil.Action{
 		{Name: "Delete", Params: []interface{}{memberStoreKey(1), true, true}},

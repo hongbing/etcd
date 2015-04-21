@@ -14,7 +14,82 @@
 
 package version
 
-var (
-	Version         = "2.0.3"
-	InternalVersion = "2"
+import (
+	"encoding/json"
+	"log"
+	"os"
+	"path"
+
+	"github.com/coreos/etcd/pkg/fileutil"
+	"github.com/coreos/etcd/pkg/types"
 )
+
+var (
+	Version = "2.0.4+git"
+)
+
+// WalVersion is an enum for versions of etcd logs.
+type DataDirVersion string
+
+const (
+	DataDirUnknown  DataDirVersion = "Unknown WAL"
+	DataDir0_4      DataDirVersion = "0.4.x"
+	DataDir2_0      DataDirVersion = "2.0.0"
+	DataDir2_0Proxy DataDirVersion = "2.0 proxy"
+	DataDir2_0_1    DataDirVersion = "2.0.1"
+)
+
+type Versions struct {
+	Server string `json:"etcdserver"`
+	// TODO: etcdcluster version
+	// TODO: raft state machine version
+}
+
+// MarshalJSON returns the JSON encoding of Versions struct.
+func MarshalJSON() []byte {
+	b, err := json.Marshal(Versions{Server: Version})
+	if err != nil {
+		log.Panicf("version: cannot marshal versions to json (%v)", err)
+	}
+	return b
+}
+
+func DetectDataDir(dirpath string) (DataDirVersion, error) {
+	names, err := fileutil.ReadDir(dirpath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			err = nil
+		}
+		// Error reading the directory
+		return DataDirUnknown, err
+	}
+	nameSet := types.NewUnsafeSet(names...)
+	if nameSet.Contains("member") {
+		ver, err := DetectDataDir(path.Join(dirpath, "member"))
+		if ver == DataDir2_0 {
+			return DataDir2_0_1, nil
+		} else if ver == DataDir0_4 {
+			// How in the blazes did it get there?
+			return DataDirUnknown, nil
+		}
+		return ver, err
+	}
+	if nameSet.ContainsAll([]string{"snap", "wal"}) {
+		// .../wal cannot be empty to exist.
+		walnames, err := fileutil.ReadDir(path.Join(dirpath, "wal"))
+		if err == nil && len(walnames) > 0 {
+			return DataDir2_0, nil
+		}
+	}
+	if nameSet.ContainsAll([]string{"proxy"}) {
+		return DataDir2_0Proxy, nil
+	}
+	if nameSet.ContainsAll([]string{"snapshot", "conf", "log"}) {
+		return DataDir0_4, nil
+	}
+	if nameSet.ContainsAll([]string{"standby_info"}) {
+		return DataDir0_4, nil
+	}
+
+	return DataDirUnknown, nil
+}

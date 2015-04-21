@@ -34,6 +34,7 @@ func (st ProgressStateType) String() string { return prstmap[uint64(st)] }
 
 // Progress represents a follower’s progress in the view of the leader. Leader maintains
 // progresses of all followers, and sends entries to the follower based on its progress.
+
 // follower的过程或者进展，由Leader来维护所有follower的进展，根据follower的进展来向follower发送entry。
 // 进展包括3种状态：probe，snapshot，replicate
 type Progress struct {
@@ -53,6 +54,7 @@ type Progress struct {
 	// 处于ProgressStateProbe，每次心跳周期最多发送一个复制消息。
 	// 处于ProgressStateReplicate状态，尽可能的多发送复制消息
 	// 处于ProgressStateSnapshot状态，优先发送snapshot。
+
 	State ProgressStateType
 	// Paused is used in ProgressStateProbe.
 	// When Paused is true, raft should pause sending replication message to this peer.
@@ -62,7 +64,9 @@ type Progress struct {
 	// index of the snapshot. If pendingSnapshot is set, the replication process of
 	// this Progress will be paused. raft will not resend snapshot until the pending one
 	// is reported to be failed.
+
 	// 设置了pendingSnapshot过后，停止消息复制过程。
+
 	PendingSnapshot uint64
 
 	// inflights is a sliding window for the inflight messages.
@@ -72,6 +76,7 @@ type Progress struct {
 	// in order.
 	// When receives a reply, the previous inflights should be freed
 	// by calling inflights.freeTo.
+
 	// inflight消息的滑动窗口
 	ins *inflights
 }
@@ -223,7 +228,9 @@ func (in *inflights) add(inflight uint64) {
 }
 
 // freeTo frees the inflights smaller or equal to the given `to` flight.
+
 // 释放给定的to参数之前（小于等于）的inflight。
+
 func (in *inflights) freeTo(to uint64) {
 	if in.count == 0 || to < in.buffer[in.start] {
 		// out of the left side of the window

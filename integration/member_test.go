@@ -82,7 +82,7 @@ func TestLaunchDuplicateMemberShouldFail(t *testing.T) {
 
 func TestSnapshotAndRestartMember(t *testing.T) {
 	defer afterTest(t)
-	m := mustNewMember(t, "snapAndRestartTest")
+	m := mustNewMember(t, "snapAndRestartTest", false)
 	m.SnapCount = 100
 	m.Launch()
 	defer m.Terminate(t)
@@ -95,7 +95,7 @@ func TestSnapshotAndRestartMember(t *testing.T) {
 		kapi := client.NewKeysAPI(cc)
 		ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 		key := fmt.Sprintf("foo%d", i)
-		resps[i], err = kapi.Create(ctx, "/"+key, "bar", -1)
+		resps[i], err = kapi.Create(ctx, "/"+key, "bar")
 		if err != nil {
 			t.Fatalf("#%d: create on %s error: %v", i, m.URL(), err)
 		}
@@ -109,7 +109,7 @@ func TestSnapshotAndRestartMember(t *testing.T) {
 		kapi := client.NewKeysAPI(cc)
 		ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
 		key := fmt.Sprintf("foo%d", i)
-		resp, err := kapi.Get(ctx, "/"+key)
+		resp, err := kapi.Get(ctx, "/"+key, nil)
 		if err != nil {
 			t.Fatalf("#%d: get on %s error: %v", i, m.URL(), err)
 		}

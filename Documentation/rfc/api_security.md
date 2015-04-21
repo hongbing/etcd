@@ -3,11 +3,11 @@
 ## etcd Resources 
 There are three types of resources in etcd
 
-1. user resources: users and roles in the user store
+1. permission resources: users and roles in the user store
 2. key-value resources: key-value pairs in the key-value store
 3. settings resources: security settings, auth settings, and dynamic etcd cluster settings (election/heartbeat)
 
-### User Resources 
+### Permission Resources 
 
 #### Users
 A user is an identity to be authenticated. Each user can have multiple roles. The user has a capability on the resource if one of the roles has that capability.
@@ -84,7 +84,6 @@ The User JSON object is formed as follows:
   ],
   "grant": [],
   "revoke": [],
-  "lastModified": "2006-01-02Z04:05:07"
 }
 ```
 
@@ -100,7 +99,6 @@ GET/HEAD  /v2/security/user
         200 OK
         403 Forbidden
     200 Headers:
-        ETag: "<hash of list of users>"
         Content-type: application/json
     200 Body:
         {
@@ -118,13 +116,11 @@ GET/HEAD  /v2/security/users/alice
         403 Forbidden
         404 Not Found
     200 Headers:
-        ETag: "users/alice:<lastModified>"
         Content-type: application/json
     200 Body:
         {
           "user" : "alice"
           "roles" : ["fleet", "etcd"]
-          "lastModified": "2015-02-05Z18:00:00"
         }
 
 **Create A User**
@@ -141,8 +137,6 @@ PUT  /v2/security/users/charlie
         200 OK
         403 Forbidden
         409 Conflict (if exists)
-    200 Headers:
-        ETag: "users/charlie:<tzNow>"
     200 Body: (empty)
 
 **Remove A User**
@@ -171,8 +165,6 @@ PUT  /v2/security/users/charlie/grant
         403 Forbidden
         404 Not Found
         409 Conflict
-    200 Headers:
-        ETag: "users/charlie:<tzNow>"
     200 Body: 
         JSON user struct, updated. "roles" now contains the grants, and "grantRoles" is empty. If there is an error in the set of roles to be added, for example, a non-existent role, then 409 is returned, with an error JSON stating why.
 
@@ -189,8 +181,6 @@ PUT  /v2/security/users/charlie/revoke
         403 Forbidden
         404 Not Found
         409 Conflict
-    200 Headers:
-        ETag: "users/charlie:<tzNow>"
     200 Body: 
         JSON user struct, updated. "roles" now doesn't contain the roles, and "revokeRoles" is empty. If there is an error in the set of roles to be removed, for example, a non-existent role, then 409 is returned, with an error JSON stating why.
 
@@ -206,8 +196,6 @@ PUT  /v2/security/users/charlie/password
         200 OK
         403 Forbidden
         404 Not Found
-    200 Headers:
-        ETag: "users/charlie:<tzNow>"
     200 Body:
         JSON user struct, updated
 
@@ -226,7 +214,6 @@ A full role structure may look like this. A Permission List structure is used fo
     "grant" : {"kv": {...}},
     "revoke": {"kv": {...}},
     "members" : ["alice", "bob"],
-    "lastModified": "2015-02-05Z18:00:00"
 }
 ```
 
@@ -269,8 +256,6 @@ GET/HEAD  /v2/security/roles/fleet
           "write": {
             "prefixesAllowed": ["/fleet/"],
           },
-          "members" : ["alice", "bob"] // Reverse map optional?
-          "lastModified": "2015-02-05Z18:00:00"
         }
 
 **Create A Role**
@@ -286,8 +271,6 @@ PUT  /v2/security/roles/rocket
         403 Forbidden
         404 Not Found
         409 Conflict (if exists)
-    200 Headers:
-        ETag: "roles/rocket:<tzNow>"
     200 Body: 
         JSON state of the role
 
@@ -334,7 +317,48 @@ PUT  /v2/security/roles/rocket/update
         JSON state of the role, with change containing empty lists and the deltas applied appropriately.
 
 
-#### TBD Management modification
+#### Enable and Disable Security
+        
+**Get security status**
+
+GET  /v2/security/enable
+
+    Sent Headers:
+    Possible Status Codes:
+        200 OK
+    200 Body:
+        {
+          "enabled": true
+        }
+
+
+**Enable security**
+
+Enabling security means setting an explicit `root` user and password. ROOTs roles are irrelevant, as this user has full permissions.
+
+PUT  /v2/security/enable
+
+    Sent Headers:
+    Put Body:
+        {
+          "user" : "root",
+          "password": "toor"
+        }
+    Possible Status Codes:
+        200 OK
+        400 Bad Request (if not a root user)
+    200 Body: (empty)
+
+**Disable security**
+
+DELETE  /v2/security/enable
+
+    Sent Headers:
+        Authorization: Basic <RootAuthString>
+    Possible Status Codes:
+        200 OK
+        403 Forbidden (if not a root user)
+    200 Body: (empty)
 
 
 ## Example Workflow
@@ -343,13 +367,12 @@ Let's walk through an example to show two tenants (applications, in our case) us
 
 ### Enable security
 
-//TODO(barakmich): Maybe this is dynamic? I don't like the idea of rebooting when we don't have to.
-
-#### Default ROOT 
-
-etcd always has a ROOT when started with security enabled. The default username is `root`, and the password is `root`. 
-
-// TODO(barakmich): if the enabling is dynamic, perhaps that'd be a good time to set a password? Thus obviating the next section.
+```
+PUT  /v2/security/enable
+    Headers:
+    Put Body:
+        {"user" : "root", "password": "root"}
+```
 
 
 ### Change root's password

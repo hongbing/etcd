@@ -61,7 +61,12 @@ func mustNewMembersAPI(c *cli.Context) client.MembersAPI {
 		os.Exit(1)
 	}
 
-	hc, err := client.NewHTTPClient(tr, eps)
+	cfg := client.Config{
+		Transport: tr,
+		Endpoints: eps,
+	}
+
+	hc, err := client.New(cfg)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
@@ -99,7 +104,11 @@ func actionMemberList(c *cli.Context) {
 	}
 
 	for _, m := range members {
-		fmt.Printf("%s: name=%s peerURLs=%s clientURLs=%s\n", m.ID, m.Name, strings.Join(m.PeerURLs, ","), strings.Join(m.ClientURLs, ","))
+		if len(m.Name) == 0 {
+			fmt.Printf("%s[unstarted]: peerURLs=%s\n", m.ID, strings.Join(m.PeerURLs, ","))
+		} else {
+			fmt.Printf("%s: name=%s peerURLs=%s clientURLs=%s\n", m.ID, m.Name, strings.Join(m.PeerURLs, ","), strings.Join(m.ClientURLs, ","))
+		}
 	}
 }
 

@@ -30,6 +30,10 @@ If you're considering etcd for production use, please see: [production-ready.md]
 
 The latest release and setup instructions are available at [GitHub][github-release].
 
+You can build a latest etcd from master branch. All development occurs on the master branch which includes new features and bug fixes.
+
+Bug fixes should target the master branch and ported to the appropriate release branch as described in the [branch management](./Documentation/branch_management.md) guide.
+
 [github-release]: https://github.com/coreos/etcd/releases/
 
 ### Running etcd
@@ -40,13 +44,13 @@ First start a single-member cluster of etcd:
 ./bin/etcd
 ```
 
-This will bring up etcd listening on port 4001 for client communication and on port 7001 for server-to-server communication.
+This will bring up etcd listening on port 2379 for client communication and on port 2380 for server-to-server communication.
 
 Next, let's set a single key, and then retrieve it:
 
 ```
-curl -L http://127.0.0.1:4001/v2/keys/mykey -XPUT -d value="this is awesome"
-curl -L http://127.0.0.1:4001/v2/keys/mykey
+curl -L http://127.0.0.1:2379/v2/keys/mykey -XPUT -d value="this is awesome"
+curl -L http://127.0.0.1:2379/v2/keys/mykey
 ```
 
 You have successfully started an etcd and written a key to the store.
@@ -55,7 +59,7 @@ You have successfully started an etcd and written a key to the store.
 
 First install [goreman](https://github.com/mattn/goreman), which manages Procfile-based applications.
 
-Our [Profile script](./Procfile) will set up a local example cluster. You can start it with:
+Our [Procfile script](./Procfile) will set up a local example cluster. You can start it with:
 
 ```sh
 goreman start
@@ -108,7 +112,7 @@ New minor versions may add additional features to the API.
 You can get the version of etcd by issuing a request to /version:
 
 ```sh
-curl -L http://127.0.0.1:4001/version
+curl -L http://127.0.0.1:2379/version
 ```
 
 #### API Versioning
