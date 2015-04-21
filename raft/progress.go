@@ -34,9 +34,11 @@ func (st ProgressStateType) String() string { return prstmap[uint64(st)] }
 
 // Progress represents a follower’s progress in the view of the leader. Leader maintains
 // progresses of all followers, and sends entries to the follower based on its progress.
-// follower的进展，由Leader来维护所有follower的进展，根据follower的进展来向follower发送entry。
+// follower的过程或者进展，由Leader来维护所有follower的进展，根据follower的进展来向follower发送entry。
+// 进展包括3种状态：probe，snapshot，replicate
 type Progress struct {
-	//Match表示follower中与leader匹配的那个enrty的index
+	//Match表示follower中与leader最高匹配的那个enrty的index
+	//Next表示将要复制给follower的第一个Entry的index
 	Match, Next uint64
 	// When in ProgressStateProbe, leader sends at most one replication message
 	// per heartbeat interval. It also probes actual progress of the follower.
@@ -60,7 +62,7 @@ type Progress struct {
 	// index of the snapshot. If pendingSnapshot is set, the replication process of
 	// this Progress will be paused. raft will not resend snapshot until the pending one
 	// is reported to be failed.
-	// 设置了pendingSnapshot过后，停止复制过程。
+	// 设置了pendingSnapshot过后，停止消息复制过程。
 	PendingSnapshot uint64
 
 	// inflights is a sliding window for the inflight messages.

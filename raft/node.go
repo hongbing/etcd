@@ -101,6 +101,7 @@ func (rd Ready) containsUpdates() bool {
 }
 
 // Node represents a node in a raft cluster.
+// node代表一个状态机实例
 type Node interface {
 	// Tick increments the internal logical clock for the Node by a single tick. Election
 	// timeouts and heartbeat timeouts are in units of ticks.
@@ -115,6 +116,7 @@ type Node interface {
 	// Application needs to call ApplyConfChange when applying EntryConfChange type entry.
 	ProposeConfChange(ctx context.Context, cc pb.ConfChange) error
 	// Step advances the state machine using the given message. ctx.Err() will be returned, if any.
+	//Step 推进状态机的执行
 	Step(ctx context.Context, msg pb.Message) error
 	// Ready returns a channel that returns the current point-in-time state
 	// Users of the Node must call Advance after applying the state returned by Ready
