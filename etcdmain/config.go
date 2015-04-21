@@ -34,12 +34,14 @@ const (
 	proxyFlagReadonly = "readonly"
 	proxyFlagOn       = "on"
 
-	fallbackFlagExit  = "exit"
+	fallbackFlagExit = "exit"
+	//raft server降为proxy模式。
 	fallbackFlagProxy = "proxy"
 
+	// cluster的状态，是新增的还是已经存在的
 	clusterStateFlagNew      = "new"
 	clusterStateFlagExisting = "existing"
-
+	//cluster的默认名字
 	defaultName = "default"
 )
 
@@ -64,12 +66,14 @@ var (
 		"Choose one of \"initial-cluster\", \"discovery\" or \"discovery-srv\"")
 )
 
+//raft配置信息
 type config struct {
 	*flag.FlagSet
 
 	// member
-	corsInfo       *cors.CORSInfo
-	dir            string
+	corsInfo *cors.CORSInfo
+	dir      string
+	//lpurls表示监听peer的urls，lcurls表示监听client的urls.
 	lpurls, lcurls []url.URL
 	maxSnapFiles   uint
 	maxWalFiles    uint

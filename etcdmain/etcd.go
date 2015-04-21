@@ -75,7 +75,7 @@ func Main() {
 	if which != dirEmpty {
 		log.Printf("etcd: already initialized as %v before, starting as etcd %v...", which, which)
 	}
-
+	//根据配置参数决定是启动proxy还是etcdServer
 	shouldProxy := cfg.isProxy() || which == dirProxy
 	if !shouldProxy {
 		stopped, err = startEtcd(cfg)
@@ -104,12 +104,13 @@ func Main() {
 }
 
 // startEtcd launches the etcd server and HTTP handlers for client/server communication.
+// 启动raft server，以及client和server之间http通信协议的处理。
 func startEtcd(cfg *config) (<-chan struct{}, error) {
 	cls, err := setupCluster(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("error setting up initial cluster: %v", err)
 	}
-
+	//与cluster的其他节点通信，采用NewTimeoutTransport
 	pt, err := transport.NewTimeoutTransport(cfg.peerTLSInfo, rafthttp.DialTimeout, rafthttp.ConnReadTimeout, rafthttp.ConnWriteTimeout)
 	if err != nil {
 		return nil, err
@@ -143,6 +144,7 @@ func startEtcd(cfg *config) (<-chan struct{}, error) {
 	clns := make([]net.Listener, 0)
 	for _, u := range cfg.lcurls {
 		var l net.Listener
+		//与client之间的连接，采用NewKeepAliveListener
 		l, err = transport.NewKeepAliveListener(u.Host, u.Scheme, cfg.clientTLSInfo)
 		if err != nil {
 			return nil, err
@@ -158,7 +160,7 @@ func startEtcd(cfg *config) (<-chan struct{}, error) {
 		}()
 		clns = append(clns, l)
 	}
-
+	//构造etcdServer的配置信息
 	srvcfg := &etcdserver.ServerConfig{
 		Name:            cfg.name,
 		ClientURLs:      cfg.acurls,
@@ -187,6 +189,7 @@ func startEtcd(cfg *config) (<-chan struct{}, error) {
 	if cfg.corsInfo.String() != "" {
 		log.Printf("etcd: cors = %s", cfg.corsInfo)
 	}
+	//http协议的client handler 和peer handler
 	ch := &cors.CORSHandler{
 		Handler: etcdhttp.NewClientHandler(s),
 		Info:    cfg.corsInfo,
@@ -210,6 +213,7 @@ func startEtcd(cfg *config) (<-chan struct{}, error) {
 }
 
 // startProxy launches an HTTP proxy for client communication which proxies to other etcd nodes.
+// 启动http proxy
 func startProxy(cfg *config) error {
 	cls, err := setupCluster(cfg)
 	if err != nil {
@@ -357,6 +361,7 @@ func genClusterString(name string, urls types.URLs) string {
 
 // identifyDataDirOrDie returns the type of the data dir.
 // Dies if the datadir is invalid.
+// 返回目录类型：member，proxy和empty
 func identifyDataDirOrDie(dir string) dirType {
 	names, err := fileutil.ReadDir(dir)
 	if err != nil {

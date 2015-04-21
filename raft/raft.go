@@ -132,11 +132,12 @@ type raft struct {
 
 	maxInflight int
 	maxMsgSize  uint64
-	prs         map[uint64]*Progress
+	// Progress表示follower的进展，progress的个数表示follower的数量。
+	prs map[uint64]*Progress
 
 	//表示raft的三种角色
 	state StateType
-
+	//表示follower的投票key:follower id,value:是否投票
 	votes map[uint64]bool
 
 	msgs []pb.Message
@@ -216,6 +217,7 @@ func (r *raft) hasLeader() bool { return r.lead != None }
 
 func (r *raft) softState() *SoftState { return &SoftState{Lead: r.lead, RaftState: r.state} }
 
+//返回follower的大多数的值
 func (r *raft) q() int { return len(r.prs)/2 + 1 }
 
 func (r *raft) nodes() []uint64 {
@@ -285,7 +287,7 @@ func (r *raft) sendAppend(to uint64) {
 	r.send(m)
 }
 
-// sendHeartbeat sends an empty MsgApp
+// sendHeartbeat sends an empty MsgApp to follower i
 func (r *raft) sendHeartbeat(to uint64) {
 	// Attach the commit as min(to.matched, r.committed).
 	// When the leader sends out heartbeat message,
@@ -430,6 +432,8 @@ func (r *raft) becomeLeader() {
 	raftLogger.Infof("raft: %x became leader at term %d", r.id, r.Term)
 }
 
+// 竞选leader，设置自身角色为candidate并为自己投票，向所有其它follower发送投票消息
+//当投票数等于N/2+1（N为server个数）时，升级为leader。
 func (r *raft) campaign() {
 	r.becomeCandidate()
 	if r.q() == r.poll(r.id, true) {
@@ -446,6 +450,8 @@ func (r *raft) campaign() {
 	}
 }
 
+//记票，id为follower的id，
+//v--->true：赞成票，false:反对票
 func (r *raft) poll(id uint64, v bool) (granted int) {
 	if v {
 		raftLogger.Infof("raft: %x received vote from %x at term %d", r.id, id, r.Term)
@@ -667,6 +673,7 @@ func (r *raft) handleAppendEntries(m pb.Message) {
 	}
 }
 
+//发送heartbeat的response message
 func (r *raft) handleHeartbeat(m pb.Message) {
 	r.raftLog.commitTo(m.Commit)
 	r.send(pb.Message{To: m.From, Type: pb.MsgHeartbeatResp})

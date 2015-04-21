@@ -94,6 +94,7 @@ func DescribeEntry(e pb.Entry, f EntryFormatter) string {
 	return fmt.Sprintf("%d/%d %s %s", e.Term, e.Index, e.Type, formatted)
 }
 
+// 返回total size小于maxSize的Entry数组，total size从Entry 0开始计算。
 func limitSize(ents []pb.Entry, maxSize uint64) []pb.Entry {
 	if len(ents) == 0 {
 		return ents

@@ -20,6 +20,9 @@ import pb "github.com/coreos/etcd/raft/raftpb"
 // Note that unstable.offset may be less than the highest log
 // position in storage; this means that the next write to storage
 // might need to truncate the log before persisting unstable.entries.
+// unstable表示未提交或未被状态机执行的entry，snapshot的一种状态。
+// unstable的offset的前一个即为已经提交的Entry的index，offset既可能大于storage中的hi log 位置，
+// 也可能小于，当小于时，提交的时候需要执行截断处理。
 type unstable struct {
 	// the incoming unstable snapshot, if any.
 	snapshot *pb.Snapshot
@@ -72,6 +75,7 @@ func (u *unstable) maybeTerm(i uint64) (uint64, bool) {
 	return u.entries[i-u.offset].Term, true
 }
 
+// 将index为i，term为t的unstable Entry变为stable entry
 func (u *unstable) stableTo(i, t uint64) {
 	gt, ok := u.maybeTerm(i)
 	if !ok {
@@ -125,7 +129,7 @@ func (u *unstable) slice(lo uint64, hi uint64) []pb.Entry {
 	return u.entries[lo-u.offset : hi-u.offset]
 }
 
-// u.offset <= lo <= hi <= u.offset+len(u.offset)
+// u.offset <= lo <= hi <= u.offset+len(u.entries)
 func (u *unstable) mustCheckOutOfBounds(lo, hi uint64) {
 	if lo > hi {
 		raftLogger.Panicf("raft: invalid unstable.slice %d > %d", lo, hi)

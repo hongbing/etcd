@@ -32,10 +32,12 @@ type raftLog struct {
 	// committed is the highest log position that is known to be in
 	// stable storage on a quorum of nodes.
 	// Invariant: committed < unstable
+	// 已经提交到stable storage中的最大位置
 	committed uint64
 	// applied is the highest log position that the application has
 	// been instructed to apply to its state machine.
 	// Invariant: applied <= committed
+	//应用到状态机的最大位置
 	applied uint64
 }
 
@@ -88,6 +90,7 @@ func (l *raftLog) maybeAppend(index, logTerm, committed uint64, ents ...pb.Entry
 	return 0, false
 }
 
+// 向raftLog中添加entry数组，返回lastIndex的值
 func (l *raftLog) append(ents ...pb.Entry) uint64 {
 	if len(ents) == 0 {
 		return l.lastIndex()
@@ -170,6 +173,7 @@ func (l *raftLog) lastIndex() uint64 {
 	return i
 }
 
+//设置raftlog的committed的位置为tocommitted
 func (l *raftLog) commitTo(tocommit uint64) {
 	// never decrease commit
 	if l.committed < tocommit {
@@ -180,6 +184,7 @@ func (l *raftLog) commitTo(tocommit uint64) {
 	}
 }
 
+//设置raftlog状态机的apply的位置为i
 func (l *raftLog) appliedTo(i uint64) {
 	if i == 0 {
 		return
@@ -217,6 +222,7 @@ func (l *raftLog) term(i uint64) uint64 {
 	panic(err) // TODO(bdarnell)
 }
 
+// 返回从i开始的所有entries，所有entries的大小必须小于maxSize
 func (l *raftLog) entries(i, maxsize uint64) []pb.Entry {
 	if i > l.lastIndex() {
 		return nil
