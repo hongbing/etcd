@@ -56,7 +56,9 @@ type ClusterInfo interface {
 }
 
 // Cluster is a list of Members that belong to the same raft cluster
+// cluster表示member的集合，id和token唯一的标识cluster
 type Cluster struct {
+	// id由所有member的url构建而来
 	id    types.ID
 	token string
 	store store.Store
@@ -83,6 +85,8 @@ type Cluster struct {
 // and cluster string, by parsing members from a set of discovery-formatted
 // names-to-IPs, like:
 // mach0=http://1.1.1.1,mach0=http://2.2.2.2,mach1=http://3.3.3.3,mach2=http://4.4.4.4
+// 根据cluster token和cluster String来生成新的cluster,token作为cluster的唯一标识，
+// string里的信息包含了cluster的member的url
 func NewClusterFromString(token string, cluster string) (*Cluster, error) {
 	c := newCluster(token)
 
@@ -168,6 +172,7 @@ func (c *Cluster) MemberByName(name string) *Member {
 	return memb.Clone()
 }
 
+//取得所有成员的ID并按序排列。
 func (c *Cluster) MemberIDs() []types.ID {
 	c.Lock()
 	defer c.Unlock()
@@ -228,6 +233,7 @@ func (c *Cluster) String() string {
 	return strings.Join(sl, ",")
 }
 
+// 根据member的id按照XXX规则来生成cluster的id
 func (c *Cluster) genID() {
 	mIDs := c.MemberIDs()
 	b := make([]byte, 8*len(mIDs))
@@ -410,6 +416,7 @@ func (c *Cluster) Validate() error {
 	return nil
 }
 
+// 从store获得存在的，和已经移除的members
 func membersFromStore(st store.Store) (map[types.ID]*Member, map[types.ID]bool) {
 	members := make(map[types.ID]*Member)
 	removed := make(map[types.ID]bool)

@@ -147,7 +147,8 @@ type Peer struct {
 // StartNode returns a new Node given configuration and a list of raft peers.
 // It appends a ConfChangeAddNode entry for each given peer to the initial log.
 
-//启动一个Node，会添加ConfChangeAddNode entry到log中。初始状态设置为follower
+//启动一个Node，启动的节点会记录其它peer的conf信息,所有的term都为1
+//会添加ConfChangeAddNode entry到log中。初始状态设置为follower
 func StartNode(c *Config, peers []Peer) Node {
 	r := newRaft(c)
 	// become the follower at term 1 and apply initial configuration
@@ -189,6 +190,7 @@ func StartNode(c *Config, peers []Peer) Node {
 // The current membership of the cluster will be restored from the Storage.
 // If the caller has an existing state machine, pass in the last log index that
 // has been applied to it; otherwise use zero.
+//重启Node，不必配置peer的数据
 func RestartNode(c *Config) Node {
 	r := newRaft(c)
 
@@ -238,6 +240,7 @@ func (n *node) Stop() {
 	<-n.done
 }
 
+//真正启动node的函数
 func (n *node) run(r *raft) {
 	var propc chan pb.Message
 	var readyc chan Ready

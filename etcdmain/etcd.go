@@ -52,8 +52,11 @@ var (
 	dirEmpty  = dirType("empty")
 )
 
+//入口
 func Main() {
+	//新建配置，使用默认配置
 	cfg := NewConfig()
+	//解析命令行参数
 	err := cfg.Parse(os.Args[1:])
 	if err != nil {
 		log.Printf("etcd: error verifying flags, %v. See 'etcd -help'.", err)
@@ -61,7 +64,7 @@ func Main() {
 	}
 
 	var stopped <-chan struct{}
-
+	//设置CLuster name
 	if cfg.name != defaultName && cfg.initialCluster == initialClusterFromName(defaultName) {
 		cfg.initialCluster = initialClusterFromName(cfg.name)
 	}
@@ -110,7 +113,7 @@ func startEtcd(cfg *config) (<-chan struct{}, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error setting up initial cluster: %v", err)
 	}
-	//与cluster的其他节点通信，采用NewTimeoutTransport
+	//采用NewTimeoutTransport与cluster的其他节点通信
 	pt, err := transport.NewTimeoutTransport(cfg.peerTLSInfo, rafthttp.DialTimeout, rafthttp.ConnReadTimeout, rafthttp.ConnWriteTimeout)
 	if err != nil {
 		return nil, err
@@ -144,7 +147,7 @@ func startEtcd(cfg *config) (<-chan struct{}, error) {
 	clns := make([]net.Listener, 0)
 	for _, u := range cfg.lcurls {
 		var l net.Listener
-		//与client之间的连接，采用NewKeepAliveListener
+		//采用NewKeepAliveListener设置与client之间的listener
 		l, err = transport.NewKeepAliveListener(u.Host, u.Scheme, cfg.clientTLSInfo)
 		if err != nil {
 			return nil, err
@@ -333,6 +336,7 @@ func setupCluster(cfg *config) (*etcdserver.Cluster, error) {
 	var cls *etcdserver.Cluster
 	var err error
 	switch {
+	//服务发现url不为空,使用集群服务发现
 	case cfg.durl != "":
 		// If using discovery, generate a temporary cluster based on
 		// self's advertised peer URLs
@@ -351,6 +355,9 @@ func setupCluster(cfg *config) (*etcdserver.Cluster, error) {
 	return cls, err
 }
 
+// clusterString是由clustername和peer节点的url组成的字符串
+//name:集群名，urls：通知对等节点的urls。
+//例如：clst0=http://127.0.0.1:2222,clst0=http://127.0.0.2:3333
 func genClusterString(name string, urls types.URLs) string {
 	addrs := make([]string, 0)
 	for _, u := range urls {
@@ -362,6 +369,7 @@ func genClusterString(name string, urls types.URLs) string {
 // identifyDataDirOrDie returns the type of the data dir.
 // Dies if the datadir is invalid.
 // 返回目录类型：member，proxy和empty
+// 如果datadir无效，os.exit(1)
 func identifyDataDirOrDie(dir string) dirType {
 	names, err := fileutil.ReadDir(dir)
 	if err != nil {

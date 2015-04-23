@@ -85,6 +85,7 @@ type config struct {
 	ElectionMs uint
 
 	// clustering
+	//apurls：通知对等节点的urls，acurls：通知客户端的urls。
 	apurls, acurls      []url.URL
 	clusterState        *flags.StringsFlag
 	dnsCluster          string
@@ -147,6 +148,7 @@ func NewConfig() *config {
 	fs.UintVar(&cfg.ElectionMs, "election-timeout", 1000, "Time (in milliseconds) for an election to timeout.")
 
 	// clustering
+	// 应该搞清楚advertise peer url和listen peer url之间的关系
 	fs.Var(flags.NewURLsValue("http://localhost:2380,http://localhost:7001"), "initial-advertise-peer-urls", "List of this member's peer URLs to advertise to the rest of the cluster")
 	fs.Var(flags.NewURLsValue("http://localhost:2379,http://localhost:4001"), "advertise-client-urls", "List of this member's client URLs to advertise to the rest of the cluster")
 	fs.StringVar(&cfg.durl, "discovery", "", "Discovery service used to bootstrap the initial cluster")
@@ -204,7 +206,7 @@ func NewConfig() *config {
 	}
 	return cfg
 }
-
+// j解析命令行参数
 func (cfg *config) Parse(arguments []string) error {
 	perr := cfg.FlagSet.Parse(arguments)
 	switch perr {
@@ -268,7 +270,7 @@ func (cfg *config) Parse(arguments []string) error {
 
 	return nil
 }
-
+// 根据提供的name初始化cluster的名字
 func initialClusterFromName(name string) string {
 	n := name
 	if name == "" {

@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+//定时清理文件
 func PurgeFile(dirname string, suffix string, max uint, interval time.Duration, stop <-chan struct{}) <-chan error {
 	errC := make(chan error, 1)
 	go func() {

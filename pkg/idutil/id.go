@@ -68,6 +68,7 @@ func (g *Generator) Next() uint64 {
 	return id
 }
 
+//取x的低n位
 func lowbit(x uint64, n uint) uint64 {
 	return x & (math.MaxUint64 >> (64 - n))
 }

@@ -1,0 +1,594 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AddMember	cluster.go	/^func (c *Cluster) AddMember(m *Member, index uint64) {$/;"	f
+AddMember	etcdhttp/client_test.go	/^func (rs *resServer) AddMember(_ context.Context, _ etcdserver.Member) error    { return nil }$/;"	f
+AddMember	etcdhttp/client_test.go	/^func (s *serverRecorder) AddMember(_ context.Context, m etcdserver.Member) error {$/;"	f
+AddMember	etcdhttp/http_test.go	/^func (fs *errServer) AddMember(ctx context.Context, m etcdserver.Member) error {$/;"	f
+AddMember	server.go	/^func (s *EtcdServer) AddMember(ctx context.Context, memb Member) error {$/;"	f
+AddPeer	server_test.go	/^func (s *nopTransporter) AddPeer(id types.ID, us []string)    {}$/;"	f
+Advance	server_test.go	/^func (n *nodeRecorder) Advance()                 {}$/;"	f
+AllRoles	security/security.go	/^func (s *Store) AllRoles() ([]string, error) {$/;"	f
+AllUsers	security/security.go	/^func (s *Store) AllUsers() ([]string, error) {$/;"	f
+ApplyConfChange	server_test.go	/^func (n *nodeConfChangeCommitterRecorder) ApplyConfChange(conf raftpb.ConfChange) *raftpb.ConfState {$/;"	f
+ApplyConfChange	server_test.go	/^func (n *nodeRecorder) ApplyConfChange(conf raftpb.ConfChange) *raftpb.ConfState {$/;"	f
+Attributes	member.go	/^type Attributes struct {$/;"	t
+BecomeLeader	stats/server.go	/^func (ss *ServerStats) BecomeLeader() {$/;"	f
+Campaign	server_test.go	/^func (n *nodeRecorder) Campaign(ctx context.Context) error {$/;"	f
+CheckPassword	security/security.go	/^func (u User) CheckPassword(password string) bool {$/;"	f
+Clear	stats/queue.go	/^func (q *statsQueue) Clear() {$/;"	f
+ClientURLs	cluster.go	/^func (c *Cluster) ClientURLs() []string {$/;"	f
+ClientURLs	etcdhttp/http_test.go	/^func (c *fakeCluster) ClientURLs() []string { return c.clientURLs }$/;"	f
+Clone	member.go	/^func (m *Member) Clone() *Member {$/;"	f
+Clone	server_test.go	/^func (s *storeRecorder) Clone() store.Store {$/;"	f
+Close	server_test.go	/^func (p *storageRecorder) Close() error { return nil }$/;"	f
+CloseNotify	etcdhttp/client_test.go	/^func (rcn *recordingCloseNotifier) CloseNotify() <-chan bool {$/;"	f
+Cluster	cluster.go	/^type Cluster struct {$/;"	t
+ClusterInfo	cluster.go	/^type ClusterInfo interface {$/;"	t
+Compact	server_test.go	/^func (n *nodeRecorder) Compact(index uint64, nodes []uint64, d []byte) {$/;"	f
+CompareAndDelete	server_test.go	/^func (s *storeRecorder) CompareAndDelete(path, prevVal string, prevIdx uint64) (*store.Event, error) {$/;"	f
+CompareAndSwap	server_test.go	/^func (s *storeRecorder) CompareAndSwap(path, prevVal string, prevIdx uint64, val string, expr time.Time) (*store.Event, error) {$/;"	f
+CountsStats	stats/leader.go	/^type CountsStats struct {$/;"	t
+Create	server_test.go	/^func (s *storeRecorder) Create(path string, dir bool, val string, uniq bool, exp time.Time) (*store.Event, error) {$/;"	f
+CreateOrUpdateRole	security/security.go	/^func (s *Store) CreateOrUpdateRole(role Role) (Role, error) {$/;"	f
+CreateOrUpdateUser	security/security.go	/^func (s *Store) CreateOrUpdateUser(user User) (User, error) {$/;"	f
+CreateRole	security/security.go	/^func (s *Store) CreateRole(role Role) error {$/;"	f
+CreateUser	security/security.go	/^func (s *Store) CreateUser(user User) error {$/;"	f
+DefaultSnapCount	server.go	/^	defaultSyncTimeout = time.Second$/;"	c
+Delete	server_test.go	/^func (s *storeRecorder) Delete(path string, dir, recursive bool) (*store.Event, error) {$/;"	f
+DeleteExpiredKeys	server_test.go	/^func (s *storeRecorder) DeleteExpiredKeys(cutoff time.Time) {$/;"	f
+DeleteRole	security/security.go	/^func (s *Store) DeleteRole(name string) error {$/;"	f
+DeleteUser	security/security.go	/^func (s *Store) DeleteUser(name string) error {$/;"	f
+DisableSecurity	security/security.go	/^func (s *Store) DisableSecurity() error {$/;"	f
+Do	etcdhttp/client_test.go	/^func (rs *resServer) Do(_ context.Context, _ etcdserverpb.Request) (etcdserver.Response, error) {$/;"	f
+Do	etcdhttp/client_test.go	/^func (s *serverRecorder) Do(_ context.Context, r etcdserverpb.Request) (etcdserver.Response, error) {$/;"	f
+Do	etcdhttp/http_test.go	/^func (fs *errServer) Do(ctx context.Context, r etcdserverpb.Request) (etcdserver.Response, error) {$/;"	f
+Do	security/security_test.go	/^func (td *testDoer) Do(_ context.Context, req etcdserverpb.Request) (etcdserver.Response, error) {$/;"	f
+Do	server.go	/^func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {$/;"	f
+EnableSecurity	security/security.go	/^func (s *Store) EnableSecurity(rootUser User) error {$/;"	f
+ErrCanceled	errors.go	/^	ErrPeerURLexists = errors.New("etcdserver: peerURL exists")$/;"	v
+ErrIDExists	errors.go	/^	ErrIDRemoved     = errors.New("etcdserver: ID removed")$/;"	v
+ErrIDNotFound	errors.go	/^	ErrIDExists      = errors.New("etcdserver: ID exists")$/;"	v
+ErrIDRemoved	errors.go	/^	ErrStopped       = errors.New("etcdserver: server stopped")$/;"	v
+ErrPeerURLexists	errors.go	/^	ErrIDNotFound    = errors.New("etcdserver: ID not found")$/;"	v
+ErrStopped	errors.go	/^	ErrUnknownMethod = errors.New("etcdserver: unknown method")$/;"	v
+ErrTimeout	errors.go	/^	ErrCanceled      = errors.New("etcdserver: request cancelled")$/;"	v
+ErrUnknownMethod	errors.go	/^var ($/;"	v
+Error	etcdhttp/httptypes/errors.go	/^func (e HTTPError) Error() string {$/;"	f
+Error	security/security.go	/^func (m MergeError) Error() string { return m.errmsg }$/;"	f
+EtcdServer	server.go	/^type EtcdServer struct {$/;"	t
+EventChan	etcdhttp/client_test.go	/^func (w *dummyWatcher) EventChan() chan *store.Event {$/;"	f
+EventChan	server_test.go	/^func (w *nopWatcher) EventChan() chan *store.Event { return nil }$/;"	f
+Fail	stats/leader.go	/^func (fs *FollowerStats) Fail() {$/;"	f
+Flush	etcdhttp/client_test.go	/^func (fr *flushingRecorder) Flush() {$/;"	f
+Follower	stats/leader.go	/^func (ls *LeaderStats) Follower(name string) *FollowerStats {$/;"	f
+FollowerStats	stats/leader.go	/^type FollowerStats struct {$/;"	t
+Get	server_test.go	/^func (s *errStoreRecorder) Get(path string, recursive, sorted bool) (*store.Event, error) {$/;"	f
+Get	server_test.go	/^func (s *storeRecorder) Get(path string, recursive, sorted bool) (*store.Event, error) {$/;"	f
+GetClusterFromRemotePeers	cluster_util.go	/^func GetClusterFromRemotePeers(urls []string, tr *http.Transport) (*Cluster, error) {$/;"	f
+GetRole	security/security.go	/^func (s *Store) GetRole(name string) (Role, error) {$/;"	f
+GetUser	security/security.go	/^func (s *Store) GetUser(name string) (User, error) {$/;"	f
+Grant	security/security.go	/^func (p Permissions) Grant(n *Permissions) (Permissions, error) {$/;"	f
+Grant	security/security.go	/^func (rw rwPermission) Grant(n rwPermission) (rwPermission, error) {$/;"	f
+HTTPError	etcdhttp/httptypes/errors.go	/^type HTTPError struct {$/;"	t
+Handler	server_test.go	/^func (s *nopTransporter) Handler() http.Handler               { return nil }$/;"	f
+HasAccess	security/security.go	/^func (rw rwPermission) HasAccess(key string, write bool) bool {$/;"	f
+HasKeyAccess	security/security.go	/^func (r Role) HasKeyAccess(key string, write bool) bool {$/;"	f
+ID	cluster.go	/^func (c *Cluster) ID() types.ID { return c.id }$/;"	f
+ID	etcdhttp/client_test.go	/^func (rs *resServer) ID() types.ID     { return types.ID(1) }$/;"	f
+ID	etcdhttp/client_test.go	/^func (s *serverRecorder) ID() types.ID     { return types.ID(1) }$/;"	f
+ID	etcdhttp/http_test.go	/^func (c *fakeCluster) ID() types.ID         { return types.ID(c.id) }$/;"	f
+ID	etcdhttp/http_test.go	/^func (fs *errServer) ID() types.ID     { return types.ID(1) }$/;"	f
+ID	server.go	/^func (s *EtcdServer) ID() types.ID { return s.id }$/;"	f
+Index	etcdhttp/client_test.go	/^func (drt dummyRaftTimer) Index() uint64 { return uint64(100) }$/;"	f
+Index	server.go	/^func (s *EtcdServer) Index() uint64 { return atomic.LoadUint64(&s.r.index) }$/;"	f
+Index	server_test.go	/^func (s *storeRecorder) Index() uint64 { return 0 }$/;"	f
+Initialize	stats/server.go	/^func (ss *ServerStats) Initialize() {$/;"	f
+Insert	stats/queue.go	/^func (q *statsQueue) Insert(p *RequestStats) {$/;"	f
+IsIDRemoved	cluster.go	/^func (c *Cluster) IsIDRemoved(id types.ID) bool {$/;"	f
+IsIDRemoved	etcdhttp/http_test.go	/^func (c *fakeCluster) IsIDRemoved(id types.ID) bool          { return false }$/;"	f
+JSON	stats/leader.go	/^func (ls *LeaderStats) JSON() []byte {$/;"	f
+JSON	stats/server.go	/^func (ss *ServerStats) JSON() []byte {$/;"	f
+JsonStats	server_test.go	/^func (s *storeRecorder) JsonStats() []byte { return nil }$/;"	f
+LatencyStats	stats/leader.go	/^type LatencyStats struct {$/;"	t
+Lead	server.go	/^func (s *EtcdServer) Lead() uint64 { return atomic.LoadUint64(&s.r.lead) }$/;"	f
+Leader	etcdhttp/client_test.go	/^func (rs *resServer) Leader() types.ID { return types.ID(1) }$/;"	f
+Leader	etcdhttp/client_test.go	/^func (s *serverRecorder) Leader() types.ID { return types.ID(1) }$/;"	f
+Leader	etcdhttp/http_test.go	/^func (fs *errServer) Leader() types.ID { return types.ID(1) }$/;"	f
+Leader	server.go	/^func (s *EtcdServer) Leader() types.ID { return types.ID(s.Lead()) }$/;"	f
+LeaderStats	etcdhttp/client_test.go	/^func (ds *dummyStats) LeaderStats() []byte               { return ds.data }$/;"	f
+LeaderStats	server.go	/^func (s *EtcdServer) LeaderStats() []byte {$/;"	f
+LeaderStats	stats/leader.go	/^type LeaderStats struct {$/;"	t
+Len	member.go	/^func (p SortableMemberSliceByPeerURLs) Len() int { return len(p) }$/;"	f
+Len	member.go	/^func (s SortableMemberSlice) Len() int           { return len(s) }$/;"	f
+Len	stats/queue.go	/^func (q *statsQueue) Len() int {$/;"	f
+Less	member.go	/^func (p SortableMemberSliceByPeerURLs) Less(i, j int) bool {$/;"	f
+Less	member.go	/^func (s SortableMemberSlice) Less(i, j int) bool { return s[i].ID < s[j].ID }$/;"	f
+Marshal	etcdserverpb/etcdserver.pb.go	/^func (m *Metadata) Marshal() (data []byte, err error) {$/;"	f
+Marshal	etcdserverpb/etcdserver.pb.go	/^func (m *Request) Marshal() (data []byte, err error) {$/;"	f
+MarshalJSON	etcdhttp/httptypes/member.go	/^func (c *MemberCollection) MarshalJSON() ([]byte, error) {$/;"	f
+MarshalTo	etcdserverpb/etcdserver.pb.go	/^func (m *Metadata) MarshalTo(data []byte) (n int, err error) {$/;"	f
+MarshalTo	etcdserverpb/etcdserver.pb.go	/^func (m *Request) MarshalTo(data []byte) (n int, err error) {$/;"	f
+Member	cluster.go	/^func (c *Cluster) Member(id types.ID) *Member {$/;"	f
+Member	etcdhttp/http_test.go	/^func (c *fakeCluster) Member(id types.ID) *etcdserver.Member { return c.members[uint64(id)] }$/;"	f
+Member	etcdhttp/httptypes/member.go	/^type Member struct {$/;"	t
+Member	member.go	/^type Member struct {$/;"	t
+MemberAttributesStorePath	member.go	/^func MemberAttributesStorePath(id types.ID) string {$/;"	f
+MemberByName	cluster.go	/^func (c *Cluster) MemberByName(name string) *Member {$/;"	f
+MemberCollection	etcdhttp/httptypes/member.go	/^type MemberCollection []Member$/;"	t
+MemberCreateRequest	etcdhttp/httptypes/member.go	/^type MemberCreateRequest struct {$/;"	t
+MemberDir	config.go	/^func (c *ServerConfig) MemberDir() string { return path.Join(c.DataDir, "member") }$/;"	f
+MemberIDs	cluster.go	/^func (c *Cluster) MemberIDs() []types.ID {$/;"	f
+MemberUpdateRequest	etcdhttp/httptypes/member.go	/^type MemberUpdateRequest struct {$/;"	t
+Members	cluster.go	/^func (c *Cluster) Members() []*Member {$/;"	f
+Members	etcdhttp/http_test.go	/^func (c *fakeCluster) Members() []*etcdserver.Member {$/;"	f
+Merge	security/security.go	/^func (r Role) Merge(n Role) (Role, error) {$/;"	f
+Merge	security/security.go	/^func (u User) Merge(n User) (User, error) {$/;"	f
+MergeError	security/security.go	/^type MergeError struct {$/;"	t
+Metadata	etcdserverpb/etcdserver.pb.go	/^type Metadata struct {$/;"	t
+NewClientHandler	etcdhttp/client.go	/^func NewClientHandler(server *etcdserver.EtcdServer) http.Handler {$/;"	f
+NewClusterFromMembers	cluster.go	/^func NewClusterFromMembers(token string, id types.ID, membs []*Member) *Cluster {$/;"	f
+NewClusterFromStore	cluster.go	/^func NewClusterFromStore(token string, st store.Store) *Cluster {$/;"	f
+NewClusterFromString	cluster.go	/^func NewClusterFromString(token string, cluster string) (*Cluster, error) {$/;"	f
+NewHTTPError	etcdhttp/httptypes/errors.go	/^func NewHTTPError(code int, m string) *HTTPError {$/;"	f
+NewLeaderStats	stats/leader.go	/^func NewLeaderStats(id string) *LeaderStats {$/;"	f
+NewMember	member.go	/^func NewMember(name string, peerURLs types.URLs, clusterName string, now *time.Time) *Member {$/;"	f
+NewPeerHandler	etcdhttp/peer.go	/^func NewPeerHandler(clusterInfo etcdserver.ClusterInfo, timer etcdserver.RaftTimer, raftHandler http.Handler) http.Handler {$/;"	f
+NewServer	server.go	/^func NewServer(cfg *ServerConfig) (*EtcdServer, error) {$/;"	f
+NewStorage	storage.go	/^func NewStorage(w *wal.WAL, s *snap.Snapshotter) Storage {$/;"	f
+NewStore	security/security.go	/^func NewStore(server doer, timeout time.Duration) *Store {$/;"	f
+Pause	server_test.go	/^func (s *nopTransporter) Pause()                              {}$/;"	f
+PauseSending	server.go	/^func (s *EtcdServer) PauseSending() { s.r.pauseSending() }$/;"	f
+PeerURLs	cluster.go	/^func (c *Cluster) PeerURLs() []string {$/;"	f
+Permissions	security/security.go	/^type Permissions struct {$/;"	t
+PickPeerURL	member.go	/^func (m *Member) PickPeerURL() string {$/;"	f
+Print	config.go	/^func (c *ServerConfig) Print() { c.print(false) }$/;"	f
+PrintWithInitial	config.go	/^func (c *ServerConfig) PrintWithInitial() { c.print(true) }$/;"	f
+Process	etcdhttp/client_test.go	/^func (rs *resServer) Process(_ context.Context, _ raftpb.Message) error         { return nil }$/;"	f
+Process	etcdhttp/client_test.go	/^func (s *serverRecorder) Process(_ context.Context, m raftpb.Message) error {$/;"	f
+Process	etcdhttp/http_test.go	/^func (fs *errServer) Process(ctx context.Context, m raftpb.Message) error {$/;"	f
+Process	server.go	/^func (s *EtcdServer) Process(ctx context.Context, m raftpb.Message) error {$/;"	f
+Propose	server_test.go	/^func (n *nodeCommitter) Propose(ctx context.Context, data []byte) error {$/;"	f
+Propose	server_test.go	/^func (n *nodeProposalBlockerRecorder) Propose(ctx context.Context, data []byte) error {$/;"	f
+Propose	server_test.go	/^func (n *nodeRecorder) Propose(ctx context.Context, data []byte) error {$/;"	f
+ProposeConfChange	server_test.go	/^func (n *nodeConfChangeCommitterRecorder) ProposeConfChange(ctx context.Context, conf raftpb.ConfChange) error {$/;"	f
+ProposeConfChange	server_test.go	/^func (n *nodeRecorder) ProposeConfChange(ctx context.Context, conf raftpb.ConfChange) error {$/;"	f
+ProtoMessage	etcdserverpb/etcdserver.pb.go	/^func (*Metadata) ProtoMessage()    {}$/;"	f
+ProtoMessage	etcdserverpb/etcdserver.pb.go	/^func (*Request) ProtoMessage()    {}$/;"	f
+RaftAttributes	member.go	/^type RaftAttributes struct {$/;"	t
+RaftHandler	server.go	/^func (s *EtcdServer) RaftHandler() http.Handler { return s.r.transport.Handler() }$/;"	f
+RaftTimer	raft.go	/^type RaftTimer interface {$/;"	t
+Rate	stats/queue.go	/^func (q *statsQueue) Rate() (float64, float64) {$/;"	f
+Ready	server_test.go	/^func (n *nodeCommitter) Ready() <-chan raft.Ready {$/;"	f
+Ready	server_test.go	/^func (n *nodeConfChangeCommitterRecorder) Ready() <-chan raft.Ready {$/;"	f
+Ready	server_test.go	/^func (n *nodeRecorder) Ready() <-chan raft.Ready { return nil }$/;"	f
+Ready	server_test.go	/^func (n *readyNode) Ready() <-chan raft.Ready { return n.readyc }$/;"	f
+Recover	cluster.go	/^func (c *Cluster) Recover() {$/;"	f
+Recovery	server_test.go	/^func (s *storeRecorder) Recovery(b []byte) error {$/;"	f
+RecvAppendReq	stats/server.go	/^func (ss *ServerStats) RecvAppendReq(leader string, reqSize int) {$/;"	f
+RecvRates	stats/server.go	/^func (ss *ServerStats) RecvRates() (float64, float64) {$/;"	f
+Register	server_test.go	/^func (w *waitRecorder) Register(id uint64) <-chan interface{} {$/;"	f
+Register	server_test.go	/^func (w *waitWithResponse) Register(id uint64) <-chan interface{} {$/;"	f
+Remove	etcdhttp/client_test.go	/^func (w *dummyWatcher) Remove()            {}$/;"	f
+Remove	server_test.go	/^func (w *nopWatcher) Remove()                      {}$/;"	f
+RemoveAllPeers	server_test.go	/^func (s *nopTransporter) RemoveAllPeers()                     {}$/;"	f
+RemoveMember	cluster.go	/^func (c *Cluster) RemoveMember(id types.ID, index uint64) {$/;"	f
+RemoveMember	etcdhttp/client_test.go	/^func (rs *resServer) RemoveMember(_ context.Context, _ uint64) error            { return nil }$/;"	f
+RemoveMember	etcdhttp/client_test.go	/^func (s *serverRecorder) RemoveMember(_ context.Context, id uint64) error {$/;"	f
+RemoveMember	etcdhttp/http_test.go	/^func (fs *errServer) RemoveMember(ctx context.Context, id uint64) error {$/;"	f
+RemoveMember	server.go	/^func (s *EtcdServer) RemoveMember(ctx context.Context, id uint64) error {$/;"	f
+RemovePeer	server_test.go	/^func (s *nopTransporter) RemovePeer(id types.ID)              {}$/;"	f
+ReportSnapshot	server.go	/^func (s *EtcdServer) ReportSnapshot(id uint64, status raft.SnapshotStatus) {$/;"	f
+ReportSnapshot	server_test.go	/^func (n *nodeRecorder) ReportSnapshot(id uint64, status raft.SnapshotStatus) {}$/;"	f
+ReportUnreachable	server.go	/^func (s *EtcdServer) ReportUnreachable(id uint64) { s.r.ReportUnreachable(id) }$/;"	f
+ReportUnreachable	server_test.go	/^func (n *nodeRecorder) ReportUnreachable(id uint64) {}$/;"	f
+ReqSize	stats/queue.go	/^func (q *statsQueue) ReqSize() int {$/;"	f
+Request	etcdserverpb/etcdserver.pb.go	/^type Request struct {$/;"	t
+RequestStats	stats/queue.go	/^type RequestStats struct {$/;"	t
+Reset	etcdserverpb/etcdserver.pb.go	/^func (m *Metadata) Reset()         { *m = Metadata{} }$/;"	f
+Reset	etcdserverpb/etcdserver.pb.go	/^func (m *Request) Reset()         { *m = Request{} }$/;"	f
+Response	server.go	/^type Response struct {$/;"	t
+Resume	server_test.go	/^func (s *nopTransporter) Resume()                             {}$/;"	f
+ResumeSending	server.go	/^func (s *EtcdServer) ResumeSending() { s.r.resumeSending() }$/;"	f
+Revoke	security/security.go	/^func (p Permissions) Revoke(n *Permissions) (Permissions, error) {$/;"	f
+Revoke	security/security.go	/^func (rw rwPermission) Revoke(n rwPermission) (rwPermission, error) {$/;"	f
+Role	security/security.go	/^type Role struct {$/;"	t
+Save	server_test.go	/^func (p *storageRecorder) Save(st raftpb.HardState, ents []raftpb.Entry) error {$/;"	f
+Save	server_test.go	/^func (s *storeRecorder) Save() ([]byte, error) {$/;"	f
+SaveNoCopy	server_test.go	/^func (s *storeRecorder) SaveNoCopy() ([]byte, error) {$/;"	f
+SaveSnap	server_test.go	/^func (p *storageRecorder) SaveSnap(st raftpb.Snapshot) error {$/;"	f
+SaveSnap	storage.go	/^func (st *storage) SaveSnap(snap raftpb.Snapshot) error {$/;"	f
+SecurityEnabled	security/security.go	/^func (s *Store) SecurityEnabled() bool {$/;"	f
+SelfStats	etcdhttp/client_test.go	/^func (ds *dummyStats) SelfStats() []byte                 { return ds.data }$/;"	f
+SelfStats	server.go	/^func (s *EtcdServer) SelfStats() []byte { return s.stats.JSON() }$/;"	f
+Send	server_test.go	/^func (s *nopTransporter) Send(m []raftpb.Message)             {}$/;"	f
+SendAppendReq	stats/server.go	/^func (ss *ServerStats) SendAppendReq(reqSize int) {$/;"	f
+SendRates	stats/server.go	/^func (ss *ServerStats) SendRates() (float64, float64) {$/;"	f
+ServeHTTP	etcdhttp/client.go	/^func (h *deprecatedMachinesHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {$/;"	f
+ServeHTTP	etcdhttp/client.go	/^func (h *keysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {$/;"	f
+ServeHTTP	etcdhttp/client.go	/^func (h *membersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {$/;"	f
+ServeHTTP	etcdhttp/peer.go	/^func (h *peerMembersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {$/;"	f
+Server	server.go	/^type Server interface {$/;"	t
+ServerConfig	config.go	/^type ServerConfig struct {$/;"	t
+ServerStats	stats/server.go	/^type ServerStats struct {$/;"	t
+Set	server_test.go	/^func (s *storeRecorder) Set(path string, dir bool, val string, expr time.Time) (*store.Event, error) {$/;"	f
+SetID	cluster.go	/^func (c *Cluster) SetID(id types.ID) { c.id = id }$/;"	f
+SetStore	cluster.go	/^func (c *Cluster) SetStore(st store.Store) { c.store = st }$/;"	f
+SetTransport	cluster.go	/^func (c *Cluster) SetTransport(tr rafthttp.Transporter) {$/;"	f
+ShouldDiscover	config.go	/^func (c *ServerConfig) ShouldDiscover() bool { return c.DiscoveryURL != "" }$/;"	f
+Size	etcdserverpb/etcdserver.pb.go	/^func (m *Metadata) Size() (n int) {$/;"	f
+Size	etcdserverpb/etcdserver.pb.go	/^func (m *Request) Size() (n int) {$/;"	f
+SnapDir	config.go	/^func (c *ServerConfig) SnapDir() string { return path.Join(c.MemberDir(), "snap") }$/;"	f
+SortableMemberSlice	member.go	/^type SortableMemberSlice []*Member$/;"	t
+SortableMemberSliceByPeerURLs	member.go	/^type SortableMemberSliceByPeerURLs []*Member$/;"	t
+Start	etcdhttp/client_test.go	/^func (rs *resServer) Start()           {}$/;"	f
+Start	etcdhttp/client_test.go	/^func (s *serverRecorder) Start()           {}$/;"	f
+Start	etcdhttp/http_test.go	/^func (fs *errServer) Start()           {}$/;"	f
+Start	server.go	/^func (s *EtcdServer) Start() {$/;"	f
+StartIndex	etcdhttp/client_test.go	/^func (w *dummyWatcher) StartIndex() uint64 { return w.sidx }$/;"	f
+StartIndex	server_test.go	/^func (w *nopWatcher) StartIndex() uint64           { return 0 }$/;"	f
+Stats	stats/stats.go	/^type Stats interface {$/;"	t
+Status	server_test.go	/^func (n *nodeRecorder) Status() raft.Status      { return raft.Status{} }$/;"	f
+Step	server_test.go	/^func (n *nodeRecorder) Step(ctx context.Context, msg raftpb.Message) error {$/;"	f
+Stop	etcdhttp/client_test.go	/^func (rs *resServer) Stop()            {}$/;"	f
+Stop	etcdhttp/client_test.go	/^func (s *serverRecorder) Stop()            {}$/;"	f
+Stop	etcdhttp/http_test.go	/^func (fs *errServer) Stop()            {}$/;"	f
+Stop	server.go	/^func (s *EtcdServer) Stop() {$/;"	f
+Stop	server_test.go	/^func (n *nodeRecorder) Stop() {$/;"	f
+Stop	server_test.go	/^func (s *nopTransporter) Stop()                               {}$/;"	f
+StopNotify	server.go	/^func (s *EtcdServer) StopNotify() <-chan struct{} { return s.done }$/;"	f
+Storage	storage.go	/^type Storage interface {$/;"	t
+Store	security/security.go	/^type Store struct {$/;"	t
+StoreAdminPrefix	server.go	/^	defaultPublishRetryInterval = 5 * time.Second$/;"	c
+StoreKeysPrefix	server.go	/^	StoreAdminPrefix = "\/0"$/;"	c
+StorePermsPrefix	security/security.go	/^const ($/;"	c
+StoreStats	etcdhttp/client_test.go	/^func (ds *dummyStats) StoreStats() []byte                { return ds.data }$/;"	f
+StoreStats	server.go	/^func (s *EtcdServer) StoreStats() []byte { return s.store.JsonStats() }$/;"	f
+String	cluster.go	/^func (c *Cluster) String() string {$/;"	f
+String	etcdserverpb/etcdserver.pb.go	/^func (m *Metadata) String() string { return proto.CompactTextString(m) }$/;"	f
+String	etcdserverpb/etcdserver.pb.go	/^func (m *Request) String() string { return proto.CompactTextString(m) }$/;"	f
+Succ	stats/leader.go	/^func (fs *FollowerStats) Succ(d time.Duration) {$/;"	f
+Swap	member.go	/^func (p SortableMemberSliceByPeerURLs) Swap(i, j int) { p[i], p[j] = p[j], p[i] }$/;"	f
+Swap	member.go	/^func (s SortableMemberSlice) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }$/;"	f
+Term	etcdhttp/client_test.go	/^func (drt dummyRaftTimer) Term() uint64  { return uint64(5) }$/;"	f
+Term	server.go	/^func (s *EtcdServer) Term() uint64 { return atomic.LoadUint64(&s.r.term) }$/;"	f
+TestAddMember	server_test.go	/^func TestAddMember(t *testing.T) {$/;"	f
+TestAllRoles	security/security_test.go	/^func TestAllRoles(t *testing.T) {$/;"	f
+TestAllUsers	security/security_test.go	/^func TestAllUsers(t *testing.T) {$/;"	f
+TestAllowMethod	etcdhttp/http_test.go	/^func TestAllowMethod(t *testing.T) {$/;"	f
+TestApplyConfChangeError	server_test.go	/^func TestApplyConfChangeError(t *testing.T) {$/;"	f
+TestApplyConfChangeShouldStop	server_test.go	/^func TestApplyConfChangeShouldStop(t *testing.T) {$/;"	f
+TestApplyRequest	server_test.go	/^func TestApplyRequest(t *testing.T) {$/;"	f
+TestApplyRequestOnAdminMemberAttributes	server_test.go	/^func TestApplyRequestOnAdminMemberAttributes(t *testing.T) {$/;"	f
+TestApplySnapshotAndCommittedEntries	server_test.go	/^func TestApplySnapshotAndCommittedEntries(t *testing.T) {$/;"	f
+TestBadParseRequest	etcdhttp/client_test.go	/^func TestBadParseRequest(t *testing.T) {$/;"	f
+TestBadServeKeys	etcdhttp/client_test.go	/^func TestBadServeKeys(t *testing.T) {$/;"	f
+TestClusterAddMember	cluster_test.go	/^func TestClusterAddMember(t *testing.T) {$/;"	f
+TestClusterClientURLs	cluster_test.go	/^func TestClusterClientURLs(t *testing.T) {$/;"	f
+TestClusterFromStore	cluster_test.go	/^func TestClusterFromStore(t *testing.T) {$/;"	f
+TestClusterFromString	cluster_test.go	/^func TestClusterFromString(t *testing.T) {$/;"	f
+TestClusterFromStringBad	cluster_test.go	/^func TestClusterFromStringBad(t *testing.T) {$/;"	f
+TestClusterGenID	cluster_test.go	/^func TestClusterGenID(t *testing.T) {$/;"	f
+TestClusterMember	cluster_test.go	/^func TestClusterMember(t *testing.T) {$/;"	f
+TestClusterMemberByName	cluster_test.go	/^func TestClusterMemberByName(t *testing.T) {$/;"	f
+TestClusterMemberIDs	cluster_test.go	/^func TestClusterMemberIDs(t *testing.T) {$/;"	f
+TestClusterMembers	cluster_test.go	/^func TestClusterMembers(t *testing.T) {$/;"	f
+TestClusterPeerURLs	cluster_test.go	/^func TestClusterPeerURLs(t *testing.T) {$/;"	f
+TestClusterRemoveMember	cluster_test.go	/^func TestClusterRemoveMember(t *testing.T) {$/;"	f
+TestClusterString	cluster_test.go	/^func TestClusterString(t *testing.T) {$/;"	f
+TestClusterValidateAndAssignIDs	cluster_test.go	/^func TestClusterValidateAndAssignIDs(t *testing.T) {$/;"	f
+TestClusterValidateAndAssignIDsBad	cluster_test.go	/^func TestClusterValidateAndAssignIDsBad(t *testing.T) {$/;"	f
+TestClusterValidateConfigurationChange	cluster_test.go	/^func TestClusterValidateConfigurationChange(t *testing.T) {$/;"	f
+TestConfigVerifyBootstrapWithoutClusterAndDiscoveryURLFail	config_test.go	/^func TestConfigVerifyBootstrapWithoutClusterAndDiscoveryURLFail(t *testing.T) {$/;"	f
+TestConfigVerifyExistingWithDiscoveryURLFail	config_test.go	/^func TestConfigVerifyExistingWithDiscoveryURLFail(t *testing.T) {$/;"	f
+TestConfigVerifyLocalMember	config_test.go	/^func TestConfigVerifyLocalMember(t *testing.T) {$/;"	f
+TestCreateConfigChangeEnts	raft_test.go	/^func TestCreateConfigChangeEnts(t *testing.T) {$/;"	f
+TestDoBadLocalAction	server_test.go	/^func TestDoBadLocalAction(t *testing.T) {$/;"	f
+TestDoLocalAction	server_test.go	/^func TestDoLocalAction(t *testing.T) {$/;"	f
+TestDoProposal	server_test.go	/^func TestDoProposal(t *testing.T) {$/;"	f
+TestDoProposalCancelled	server_test.go	/^func TestDoProposalCancelled(t *testing.T) {$/;"	f
+TestDoProposalStopped	server_test.go	/^func TestDoProposalStopped(t *testing.T) {$/;"	f
+TestDoProposalTimeout	server_test.go	/^func TestDoProposalTimeout(t *testing.T) {$/;"	f
+TestGetAndDeleteRole	security/security_test.go	/^func TestGetAndDeleteRole(t *testing.T) {$/;"	f
+TestGetAndDeleteUser	security/security_test.go	/^func TestGetAndDeleteUser(t *testing.T) {$/;"	f
+TestGetID	etcdhttp/client_test.go	/^func TestGetID(t *testing.T) {$/;"	f
+TestGetIDs	raft_test.go	/^func TestGetIDs(t *testing.T) {$/;"	f
+TestGetOtherPeerURLs	server_test.go	/^func TestGetOtherPeerURLs(t *testing.T) {$/;"	f
+TestGoodParseRequest	etcdhttp/client_test.go	/^func TestGoodParseRequest(t *testing.T) {$/;"	f
+TestHTTPErrorWriteTo	etcdhttp/httptypes/errors_test.go	/^func TestHTTPErrorWriteTo(t *testing.T) {$/;"	f
+TestHandleWatch	etcdhttp/client_test.go	/^func TestHandleWatch(t *testing.T) {$/;"	f
+TestHandleWatchStreaming	etcdhttp/client_test.go	/^func TestHandleWatchStreaming(t *testing.T) {$/;"	f
+TestLeaderServeStatsBad	etcdhttp/client_test.go	/^func TestLeaderServeStatsBad(t *testing.T) {$/;"	f
+TestMemberClone	member_test.go	/^func TestMemberClone(t *testing.T) {$/;"	f
+TestMemberCreateRequestUnmarshal	etcdhttp/httptypes/member_test.go	/^func TestMemberCreateRequestUnmarshal(t *testing.T) {$/;"	f
+TestMemberCreateRequestUnmarshalFail	etcdhttp/httptypes/member_test.go	/^func TestMemberCreateRequestUnmarshalFail(t *testing.T) {$/;"	f
+TestMemberPick	member_test.go	/^func TestMemberPick(t *testing.T) {$/;"	f
+TestMemberTime	member_test.go	/^func TestMemberTime(t *testing.T) {$/;"	f
+TestMemberUnmarshal	etcdhttp/httptypes/member_test.go	/^func TestMemberUnmarshal(t *testing.T) {$/;"	f
+TestMergeRole	security/security_test.go	/^func TestMergeRole(t *testing.T) {$/;"	f
+TestMergeUser	security/security_test.go	/^func TestMergeUser(t *testing.T) {$/;"	f
+TestNewMember	etcdhttp/client_test.go	/^func TestNewMember(t *testing.T) {$/;"	f
+TestNewMemberCollection	etcdhttp/client_test.go	/^func TestNewMemberCollection(t *testing.T) {$/;"	f
+TestNewPeerHandlerOnRaftPrefix	etcdhttp/peer_test.go	/^func TestNewPeerHandlerOnRaftPrefix(t *testing.T) {$/;"	f
+TestNodeToMember	cluster_test.go	/^func TestNodeToMember(t *testing.T) {$/;"	f
+TestNodeToMemberBad	cluster_test.go	/^func TestNodeToMemberBad(t *testing.T) {$/;"	f
+TestPublish	server_test.go	/^func TestPublish(t *testing.T) {$/;"	f
+TestPublishRetry	server_test.go	/^func TestPublishRetry(t *testing.T) {$/;"	f
+TestPublishStopped	server_test.go	/^func TestPublishStopped(t *testing.T) {$/;"	f
+TestRecvSnapshot	server_test.go	/^func TestRecvSnapshot(t *testing.T) {$/;"	f
+TestRemoveMember	server_test.go	/^func TestRemoveMember(t *testing.T) {$/;"	f
+TestSelfServeStatsBad	etcdhttp/client_test.go	/^func TestSelfServeStatsBad(t *testing.T) {$/;"	f
+TestServeKeysEvent	etcdhttp/client_test.go	/^func TestServeKeysEvent(t *testing.T) {$/;"	f
+TestServeKeysGood	etcdhttp/client_test.go	/^func TestServeKeysGood(t *testing.T) {$/;"	f
+TestServeKeysWatch	etcdhttp/client_test.go	/^func TestServeKeysWatch(t *testing.T) {$/;"	f
+TestServeLeader	etcdhttp/client_test.go	/^func TestServeLeader(t *testing.T) {$/;"	f
+TestServeLeaderStats	etcdhttp/client_test.go	/^func TestServeLeaderStats(t *testing.T) {$/;"	f
+TestServeMachines	etcdhttp/client_test.go	/^func TestServeMachines(t *testing.T) {$/;"	f
+TestServeMembers	etcdhttp/client_test.go	/^func TestServeMembers(t *testing.T) {$/;"	f
+TestServeMembersCreate	etcdhttp/client_test.go	/^func TestServeMembersCreate(t *testing.T) {$/;"	f
+TestServeMembersDelete	etcdhttp/client_test.go	/^func TestServeMembersDelete(t *testing.T) {$/;"	f
+TestServeMembersFail	etcdhttp/client_test.go	/^func TestServeMembersFail(t *testing.T) {$/;"	f
+TestServeMembersFails	etcdhttp/peer_test.go	/^func TestServeMembersFails(t *testing.T) {$/;"	f
+TestServeMembersGet	etcdhttp/peer_test.go	/^func TestServeMembersGet(t *testing.T) {$/;"	f
+TestServeMembersUpdate	etcdhttp/client_test.go	/^func TestServeMembersUpdate(t *testing.T) {$/;"	f
+TestServeSelfStats	etcdhttp/client_test.go	/^func TestServeSelfStats(t *testing.T) {$/;"	f
+TestServeStoreStats	etcdhttp/client_test.go	/^func TestServeStoreStats(t *testing.T) {$/;"	f
+TestServeVersion	etcdhttp/client_test.go	/^func TestServeVersion(t *testing.T) {$/;"	f
+TestServeVersionFails	etcdhttp/client_test.go	/^func TestServeVersionFails(t *testing.T) {$/;"	f
+TestShouldDiscover	config_test.go	/^func TestShouldDiscover(t *testing.T) {$/;"	f
+TestSnapDir	config_test.go	/^func TestSnapDir(t *testing.T) {$/;"	f
+TestSnapshot	server_test.go	/^func TestSnapshot(t *testing.T) {$/;"	f
+TestStopNotify	server_test.go	/^func TestStopNotify(t *testing.T) {$/;"	f
+TestSync	server_test.go	/^func TestSync(t *testing.T) {$/;"	f
+TestSyncTimeout	server_test.go	/^func TestSyncTimeout(t *testing.T) {$/;"	f
+TestSyncTrigger	server_test.go	/^func TestSyncTrigger(t *testing.T) {$/;"	f
+TestTriggerSnap	server_test.go	/^func TestTriggerSnap(t *testing.T) {$/;"	f
+TestTrimEventPrefix	etcdhttp/client_test.go	/^func TestTrimEventPrefix(t *testing.T) {$/;"	f
+TestTrimNodeExternPrefix	etcdhttp/client_test.go	/^func TestTrimNodeExternPrefix(t *testing.T) {$/;"	f
+TestTrimPrefix	etcdhttp/client_test.go	/^func TestTrimPrefix(t *testing.T) {$/;"	f
+TestUpdateMember	server_test.go	/^func TestUpdateMember(t *testing.T) {$/;"	f
+TestV2DeprecatedMachinesEndpoint	etcdhttp/client_test.go	/^func TestV2DeprecatedMachinesEndpoint(t *testing.T) {$/;"	f
+TestWALDir	config_test.go	/^func TestWALDir(t *testing.T) {$/;"	f
+TestWriteError	etcdhttp/http_test.go	/^func TestWriteError(t *testing.T) {$/;"	f
+TestWriteEvent	etcdhttp/client_test.go	/^func TestWriteEvent(t *testing.T) {$/;"	f
+Tick	server_test.go	/^func (n *nodeRecorder) Tick() { n.Record(testutil.Action{Name: "Tick"}) }$/;"	f
+Trigger	server_test.go	/^func (w *waitRecorder) Trigger(id uint64, x interface{}) {$/;"	f
+Trigger	server_test.go	/^func (w *waitWithResponse) Trigger(id uint64, x interface{}) {}$/;"	f
+Unmarshal	etcdserverpb/etcdserver.pb.go	/^func (m *Metadata) Unmarshal(data []byte) error {$/;"	f
+Unmarshal	etcdserverpb/etcdserver.pb.go	/^func (m *Request) Unmarshal(data []byte) error {$/;"	f
+UnmarshalJSON	etcdhttp/httptypes/member.go	/^func (m *MemberCreateRequest) UnmarshalJSON(data []byte) error {$/;"	f
+Update	server_test.go	/^func (s *storeRecorder) Update(path, val string, expr time.Time) (*store.Event, error) {$/;"	f
+UpdateAttributes	cluster.go	/^func (c *Cluster) UpdateAttributes(id types.ID, attr Attributes) {$/;"	f
+UpdateIndex	cluster.go	/^func (c *Cluster) UpdateIndex(index uint64) { c.index = index }$/;"	f
+UpdateMember	etcdhttp/client_test.go	/^func (rs *resServer) UpdateMember(_ context.Context, _ etcdserver.Member) error { return nil }$/;"	f
+UpdateMember	etcdhttp/client_test.go	/^func (s *serverRecorder) UpdateMember(_ context.Context, m etcdserver.Member) error {$/;"	f
+UpdateMember	etcdhttp/http_test.go	/^func (fs *errServer) UpdateMember(ctx context.Context, m etcdserver.Member) error {$/;"	f
+UpdateMember	server.go	/^func (s *EtcdServer) UpdateMember(ctx context.Context, memb Member) error {$/;"	f
+UpdatePeer	server_test.go	/^func (s *nopTransporter) UpdatePeer(id types.ID, us []string) {}$/;"	f
+UpdateRaftAttributes	cluster.go	/^func (c *Cluster) UpdateRaftAttributes(id types.ID, raftAttr RaftAttributes, index uint64) {$/;"	f
+UpdateRecvApp	etcdhttp/client_test.go	/^func (ds *dummyStats) UpdateRecvApp(_ types.ID, _ int64) {}$/;"	f
+UpdateRole	security/security.go	/^func (s *Store) UpdateRole(role Role) (Role, error) {$/;"	f
+UpdateUser	security/security.go	/^func (s *Store) UpdateUser(user User) (User, error) {$/;"	f
+User	security/security.go	/^type User struct {$/;"	t
+Validate	cluster.go	/^func (c *Cluster) Validate() error {$/;"	f
+ValidateClusterAndAssignIDs	cluster.go	/^func ValidateClusterAndAssignIDs(local *Cluster, existing *Cluster) error {$/;"	f
+ValidateConfigurationChange	cluster.go	/^func (c *Cluster) ValidateConfigurationChange(cc raftpb.ConfChange) error {$/;"	f
+VerifyBootstrap	config.go	/^func (c *ServerConfig) VerifyBootstrap() error {$/;"	f
+VerifyJoinExisting	config.go	/^func (c *ServerConfig) VerifyJoinExisting() error {$/;"	f
+Version	server_test.go	/^func (s *storeRecorder) Version() int  { return 0 }$/;"	f
+WALDir	config.go	/^func (c *ServerConfig) WALDir() string { return path.Join(c.MemberDir(), "wal") }$/;"	f
+Watch	server_test.go	/^func (s *errStoreRecorder) Watch(path string, recursive, sorted bool, index uint64) (store.Watcher, error) {$/;"	f
+Watch	server_test.go	/^func (s *storeRecorder) Watch(_ string, _, _ bool, _ uint64) (store.Watcher, error) {$/;"	f
+WriteTo	etcdhttp/httptypes/errors.go	/^func (e HTTPError) WriteTo(w http.ResponseWriter) {$/;"	f
+_	etcdserverpb/etcdserver.pb.go	/^var _ = math.Inf$/;"	v
+_	etcdserverpb/etcdserver.pb.go	/^var _ = proto.Marshal$/;"	v
+action	etcdhttp/client_test.go	/^type action struct {$/;"	t
+allowMethod	etcdhttp/http.go	/^func allowMethod(w http.ResponseWriter, m string, ms ...string) bool {$/;"	f
+apply	raft.go	/^func (r *raftNode) apply() chan apply {$/;"	f
+apply	raft.go	/^type apply struct {$/;"	t
+apply	server.go	/^func (s *EtcdServer) apply(es []raftpb.Entry, confState *raftpb.ConfState) (uint64, bool) {$/;"	f
+applyConfChange	server.go	/^func (s *EtcdServer) applyConfChange(cc raftpb.ConfChange, confState *raftpb.ConfState, index uint64) (bool, error) {$/;"	f
+applyRequest	server.go	/^func (s *EtcdServer) applyRequest(r pb.Request) Response {$/;"	f
+attributesSuffix	cluster.go	/^	raftAttributesSuffix = "raftAttributes"$/;"	c
+baseRoles	etcdhttp/client_security.go	/^func (sh *securityHandler) baseRoles(w http.ResponseWriter, r *http.Request) {$/;"	f
+baseUsers	etcdhttp/client_security.go	/^func (sh *securityHandler) baseUsers(w http.ResponseWriter, r *http.Request) {$/;"	f
+boolp	etcdhttp/client_test.go	/^func boolp(b bool) *bool { return &b }$/;"	f
+configure	server.go	/^func (s *EtcdServer) configure(ctx context.Context, cc raftpb.ConfChange) error {$/;"	f
+createConfigChangeEnts	raft.go	/^func createConfigChangeEnts(ids []uint64, self uint64, term, index uint64) []raftpb.Entry {$/;"	f
+createResource	security/security_requests.go	/^func (s *Store) createResource(res string, value interface{}) (etcdserver.Response, error) {$/;"	f
+createUserInternal	security/security.go	/^func (s *Store) createUserInternal(user User) error {$/;"	f
+defaultPublishRetryInterval	server.go	/^	DefaultSnapCount   = 10000$/;"	c
+defaultServerTimeout	etcdhttp/http.go	/^const ($/;"	c
+defaultSyncTimeout	server.go	/^	privateDirMode = 0700$/;"	c
+defaultWatchTimeout	etcdhttp/http.go	/^	defaultServerTimeout = 5*time.Second + 10*(100*time.Millisecond)$/;"	c
+deleteResource	security/security_requests.go	/^func (s *Store) deleteResource(res string) (etcdserver.Response, error) {$/;"	f
+deprecatedMachinesHandler	etcdhttp/client.go	/^type deprecatedMachinesHandler struct {$/;"	t
+deprecatedMachinesPrefix	etcdhttp/client.go	/^	keysPrefix               = "\/v2\/keys"$/;"	c
+detectSecurity	security/security_requests.go	/^func (s *Store) detectSecurity() bool {$/;"	f
+doer	security/security.go	/^type doer interface {$/;"	t
+dummyRaftTimer	etcdhttp/client_test.go	/^type dummyRaftTimer struct{}$/;"	t
+dummyStats	etcdhttp/client_test.go	/^type dummyStats struct {$/;"	t
+dummyWatcher	etcdhttp/client_test.go	/^type dummyWatcher struct {$/;"	t
+enableDisable	etcdhttp/client_security.go	/^func (sh *securityHandler) enableDisable(w http.ResponseWriter, r *http.Request) {$/;"	f
+enabled	etcdhttp/client_security.go	/^type enabled struct {$/;"	t
+encodeFixed32Etcdserver	etcdserverpb/etcdserver.pb.go	/^func encodeFixed32Etcdserver(data []byte, offset int, v uint32) int {$/;"	f
+encodeFixed64Etcdserver	etcdserverpb/etcdserver.pb.go	/^func encodeFixed64Etcdserver(data []byte, offset int, v uint64) int {$/;"	f
+encodeVarintEtcdserver	etcdserverpb/etcdserver.pb.go	/^func encodeVarintEtcdserver(data []byte, offset int, v uint64) int {$/;"	f
+ensureSecurityDirectories	security/security_requests.go	/^func (s *Store) ensureSecurityDirectories() error {$/;"	f
+errClosed	etcdhttp/http.go	/^var errClosed = errors.New("etcdhttp: client closed connection")$/;"	v
+errServer	etcdhttp/http_test.go	/^type errServer struct {$/;"	t
+errStoreRecorder	server_test.go	/^type errStoreRecorder struct {$/;"	t
+etcdhttp	etcdhttp/client.go	/^package etcdhttp$/;"	p
+etcdhttp	etcdhttp/client_security.go	/^package etcdhttp$/;"	p
+etcdhttp	etcdhttp/client_test.go	/^package etcdhttp$/;"	p
+etcdhttp	etcdhttp/http.go	/^package etcdhttp$/;"	p
+etcdhttp	etcdhttp/http_test.go	/^package etcdhttp$/;"	p
+etcdhttp	etcdhttp/peer.go	/^package etcdhttp$/;"	p
+etcdhttp	etcdhttp/peer_test.go	/^package etcdhttp$/;"	p
+etcdserver	cluster.go	/^package etcdserver$/;"	p
+etcdserver	cluster_test.go	/^package etcdserver$/;"	p
+etcdserver	cluster_util.go	/^package etcdserver$/;"	p
+etcdserver	config.go	/^package etcdserver$/;"	p
+etcdserver	config_test.go	/^package etcdserver$/;"	p
+etcdserver	errors.go	/^package etcdserver$/;"	p
+etcdserver	member.go	/^package etcdserver$/;"	p
+etcdserver	member_test.go	/^package etcdserver$/;"	p
+etcdserver	metrics.go	/^package etcdserver$/;"	p
+etcdserver	raft.go	/^package etcdserver$/;"	p
+etcdserver	raft_test.go	/^package etcdserver$/;"	p
+etcdserver	server.go	/^package etcdserver$/;"	p
+etcdserver	server_test.go	/^package etcdserver$/;"	p
+etcdserver	storage.go	/^package etcdserver$/;"	p
+etcdserverpb	etcdserverpb/etcdserver.pb.go	/^package etcdserverpb$/;"	p
+fakeCluster	etcdhttp/http_test.go	/^type fakeCluster struct {$/;"	t
+fileDescriptorUsed	metrics.go	/^	})$/;"	v
+flushingRecorder	etcdhttp/client_test.go	/^type flushingRecorder struct {$/;"	t
+forRole	etcdhttp/client_security.go	/^func (sh *securityHandler) forRole(w http.ResponseWriter, r *http.Request, role string) {$/;"	f
+forUser	etcdhttp/client_security.go	/^func (sh *securityHandler) forUser(w http.ResponseWriter, r *http.Request, user string) {$/;"	f
+frontAndBack	stats/queue.go	/^func (q *statsQueue) frontAndBack() (*RequestStats, *RequestStats) {$/;"	f
+genID	cluster.go	/^func (c *Cluster) genID() {$/;"	f
+getBool	etcdhttp/client.go	/^func getBool(form url.Values, key string) (b bool, err error) {$/;"	f
+getClusterFromRemotePeers	cluster_util.go	/^func getClusterFromRemotePeers(urls []string, logerr bool, tr *http.Transport) (*Cluster, error) {$/;"	f
+getID	etcdhttp/client.go	/^func getID(p string, w http.ResponseWriter) (types.ID, bool) {$/;"	f
+getIDs	raft.go	/^func getIDs(snap *raftpb.Snapshot, ents []raftpb.Entry) []uint64 {$/;"	f
+getRemotePeerURLs	cluster_util.go	/^func getRemotePeerURLs(cl ClusterInfo, local string) []string {$/;"	f
+getUint64	etcdhttp/client.go	/^func getUint64(form url.Values, key string) (i uint64, err error) {$/;"	f
+handleKeyWatch	etcdhttp/client.go	/^func handleKeyWatch(ctx context.Context, w http.ResponseWriter, wa store.Watcher, stream bool, rt etcdserver.RaftTimer) {$/;"	f
+handleRoles	etcdhttp/client_security.go	/^func (sh *securityHandler) handleRoles(w http.ResponseWriter, r *http.Request) {$/;"	f
+handleSecurity	etcdhttp/client_security.go	/^func handleSecurity(mux *http.ServeMux, sh *securityHandler) {$/;"	f
+handleUsers	etcdhttp/client_security.go	/^func (sh *securityHandler) handleUsers(w http.ResponseWriter, r *http.Request) {$/;"	f
+hasKeyPrefixAccess	etcdhttp/client_security.go	/^func hasKeyPrefixAccess(sec *security.Store, r *http.Request, key string) bool {$/;"	f
+hasRootAccess	etcdhttp/client_security.go	/^func hasRootAccess(sec *security.Store, r *http.Request) bool {$/;"	f
+hasWriteRootAccess	etcdhttp/client_security.go	/^func hasWriteRootAccess(sec *security.Store, r *http.Request) bool {$/;"	f
+healthHandler	etcdhttp/client.go	/^func healthHandler(server *etcdserver.EtcdServer) http.HandlerFunc {$/;"	f
+healthPath	etcdhttp/client.go	/^	metricsPath              = "\/metrics"$/;"	c
+httptypes	etcdhttp/httptypes/doc.go	/^package httptypes$/;"	p
+httptypes	etcdhttp/httptypes/errors.go	/^package httptypes$/;"	p
+httptypes	etcdhttp/httptypes/errors_test.go	/^package httptypes$/;"	p
+httptypes	etcdhttp/httptypes/member.go	/^package httptypes$/;"	p
+httptypes	etcdhttp/httptypes/member_test.go	/^package httptypes$/;"	p
+init	etcdserverpb/etcdserver.pb.go	/^func init() {$/;"	f
+init	metrics.go	/^func init() {$/;"	f
+init	raft.go	/^func init() {$/;"	f
+init	server.go	/^func init() {$/;"	f
+isKeyNotFound	errors.go	/^func isKeyNotFound(err error) bool {$/;"	f
+isMemberBootstrapped	cluster_util.go	/^func isMemberBootstrapped(cl *Cluster, member string, tr *http.Transport) bool {$/;"	f
+keysHandler	etcdhttp/client.go	/^type keysHandler struct {$/;"	t
+keysPrefix	etcdhttp/client.go	/^	securityPrefix           = "\/v2\/security"$/;"	c
+makeMemberDir	storage.go	/^func makeMemberDir(dir string) error {$/;"	f
+maxInflightMsgs	raft.go	/^	maxSizePerMsg = 1 * 1024 * 1024$/;"	c
+maxSizePerMsg	raft.go	/^	numberOfCatchUpEntries = 5000$/;"	c
+memberStoreKey	member.go	/^func memberStoreKey(id types.ID) string {$/;"	f
+membersFromStore	cluster.go	/^func membersFromStore(st store.Store) (map[types.ID]*Member, map[types.ID]bool) {$/;"	f
+membersHandler	etcdhttp/client.go	/^type membersHandler struct {$/;"	t
+membersPrefix	etcdhttp/client.go	/^	deprecatedMachinesPrefix = "\/v2\/machines"$/;"	c
+mergeErr	security/security.go	/^func mergeErr(s string, v ...interface{}) MergeError {$/;"	f
+metricsPath	etcdhttp/client.go	/^	varsPath                 = "\/debug\/vars"$/;"	c
+monitorFileDescriptor	metrics.go	/^func monitorFileDescriptor(done <-chan struct{}) {$/;"	f
+mustMarshalEvent	etcdhttp/client_test.go	/^func mustMarshalEvent(t *testing.T, ev *store.Event) string {$/;"	f
+mustNewForm	etcdhttp/client_test.go	/^func mustNewForm(t *testing.T, p string, vals url.Values) *http.Request {$/;"	f
+mustNewMethodRequest	etcdhttp/client_test.go	/^func mustNewMethodRequest(t *testing.T, m, p string) *http.Request {$/;"	f
+mustNewPostForm	etcdhttp/client_test.go	/^func mustNewPostForm(t *testing.T, p string, vals url.Values) *http.Request {$/;"	f
+mustNewRequest	etcdhttp/client_test.go	/^func mustNewRequest(t *testing.T, p string) *http.Request {$/;"	f
+mustNewURLs	config_test.go	/^func mustNewURLs(t *testing.T, urls []string) []url.URL {$/;"	f
+mustParseMemberIDFromKey	member.go	/^func mustParseMemberIDFromKey(key string) types.ID {$/;"	f
+newCluster	cluster.go	/^func newCluster(token string) *Cluster {$/;"	f
+newMember	etcdhttp/client.go	/^func newMember(m *etcdserver.Member) httptypes.Member {$/;"	f
+newMemberCollection	etcdhttp/client.go	/^func newMemberCollection(ms []*etcdserver.Member) *httptypes.MemberCollection {$/;"	f
+newNodeCommitter	server_test.go	/^func newNodeCommitter() *nodeCommitter {$/;"	f
+newNodeConfChangeCommitterRecorder	server_test.go	/^func newNodeConfChangeCommitterRecorder() *nodeConfChangeCommitterRecorder {$/;"	f
+newReadyNode	server_test.go	/^func newReadyNode() *readyNode {$/;"	f
+newTestCluster	cluster_test.go	/^func newTestCluster(membs []*Member) *Cluster {$/;"	f
+newTestMember	member_test.go	/^func newTestMember(id uint64, peerURLs []string, name string, clientURLs []string) *Member {$/;"	f
+nodeCommitter	server_test.go	/^type nodeCommitter struct {$/;"	t
+nodeConfChangeCommitterRecorder	server_test.go	/^type nodeConfChangeCommitterRecorder struct {$/;"	t
+nodeProposalBlockerRecorder	server_test.go	/^type nodeProposalBlockerRecorder struct {$/;"	t
+nodeRecorder	server_test.go	/^type nodeRecorder struct{ testutil.Recorder }$/;"	t
+nodeToMember	member.go	/^func nodeToMember(n *store.NodeExtern) (*Member, error) {$/;"	f
+nopTransporter	server_test.go	/^type nopTransporter struct{}$/;"	t
+nopWatcher	server_test.go	/^type nopWatcher struct{}$/;"	t
+numberOfCatchUpEntries	raft.go	/^const ($/;"	c
+parseCtxErr	errors.go	/^func parseCtxErr(err error) error {$/;"	f
+parseKeyRequest	etcdhttp/client.go	/^func parseKeyRequest(r *http.Request, clock clockwork.Clock) (etcdserverpb.Request, error) {$/;"	f
+pauseSending	raft.go	/^func (r *raftNode) pauseSending() {$/;"	f
+peerMembersHandler	etcdhttp/peer.go	/^type peerMembersHandler struct {$/;"	t
+peerMembersPrefix	etcdhttp/peer.go	/^const ($/;"	c
+print	config.go	/^func (c *ServerConfig) print(initial bool) {$/;"	f
+privateDirMode	server.go	/^const ($/;"	c
+proposeDurations	metrics.go	/^var ($/;"	v
+proposeFailed	metrics.go	/^	})$/;"	v
+proposePending	metrics.go	/^	})$/;"	v
+publish	server.go	/^func (s *EtcdServer) publish(retryInterval time.Duration) {$/;"	f
+purgeFile	server.go	/^func (s *EtcdServer) purgeFile() {$/;"	f
+purgeFileInterval	server.go	/^	StoreKeysPrefix  = "\/1"$/;"	c
+queueCapacity	stats/queue.go	/^const ($/;"	c
+raftAttributesSuffix	cluster.go	/^const ($/;"	c
+raftNode	raft.go	/^type raftNode struct {$/;"	t
+raftStatus	raft.go	/^var ($/;"	v
+readWAL	storage.go	/^func readWAL(waldir string, snap walpb.Snapshot) (w *wal.WAL, id, cid types.ID, st raftpb.HardState, ents []raftpb.Entry) {$/;"	f
+readyNode	server_test.go	/^type readyNode struct {$/;"	t
+recordingCloseNotifier	etcdhttp/client_test.go	/^type recordingCloseNotifier struct {$/;"	t
+removedMemberStoreKey	member.go	/^func removedMemberStoreKey(id types.ID) string {$/;"	f
+requestResource	security/security_requests.go	/^func (s *Store) requestResource(res string, dir bool) (etcdserver.Response, error) {$/;"	f
+resServer	etcdhttp/client_test.go	/^type resServer struct {$/;"	t
+restartAsStandaloneNode	raft.go	/^func restartAsStandaloneNode(cfg *ServerConfig, snapshot *raftpb.Snapshot) (types.ID, raft.Node, *raft.MemoryStorage, *wal.WAL) {$/;"	f
+restartNode	raft.go	/^func restartNode(cfg *ServerConfig, snapshot *raftpb.Snapshot) (types.ID, raft.Node, *raft.MemoryStorage, *wal.WAL) {$/;"	f
+resumeSending	raft.go	/^func (r *raftNode) resumeSending() {$/;"	f
+run	raft.go	/^func (r *raftNode) run() {$/;"	f
+run	server.go	/^func (s *EtcdServer) run() {$/;"	f
+rwPermission	security/security.go	/^type rwPermission struct {$/;"	t
+security	security/security.go	/^package security$/;"	p
+security	security/security_requests.go	/^package security$/;"	p
+security	security/security_test.go	/^package security$/;"	p
+securityHandler	etcdhttp/client_security.go	/^type securityHandler struct {$/;"	t
+securityPrefix	etcdhttp/client.go	/^const ($/;"	c
+send	server.go	/^func (s *EtcdServer) send(ms []raftpb.Message) {$/;"	f
+serveLeader	etcdhttp/client.go	/^func (h *statsHandler) serveLeader(w http.ResponseWriter, r *http.Request) {$/;"	f
+serveSelf	etcdhttp/client.go	/^func (h *statsHandler) serveSelf(w http.ResponseWriter, r *http.Request) {$/;"	f
+serveStore	etcdhttp/client.go	/^func (h *statsHandler) serveStore(w http.ResponseWriter, r *http.Request) {$/;"	f
+serveVars	etcdhttp/client.go	/^func serveVars(w http.ResponseWriter, r *http.Request) {$/;"	f
+serveVersion	etcdhttp/client.go	/^func serveVersion(w http.ResponseWriter, r *http.Request) {$/;"	f
+serverRecorder	etcdhttp/client_test.go	/^type serverRecorder struct {$/;"	t
+setResource	security/security_requests.go	/^func (s *Store) setResource(res string, value interface{}, prevexist bool) (etcdserver.Response, error) {$/;"	f
+snapshot	server.go	/^func (s *EtcdServer) snapshot(snapi uint64, confState raftpb.ConfState) {$/;"	f
+sovEtcdserver	etcdserverpb/etcdserver.pb.go	/^func sovEtcdserver(x uint64) (n int) {$/;"	f
+sozEtcdserver	etcdserverpb/etcdserver.pb.go	/^func sozEtcdserver(x uint64) (n int) {$/;"	f
+start	server.go	/^func (s *EtcdServer) start() {$/;"	f
+startNode	raft.go	/^func startNode(cfg *ServerConfig, ids []types.ID) (id types.ID, n raft.Node, s *raft.MemoryStorage, w *wal.WAL) {$/;"	f
+stats	stats/leader.go	/^package stats$/;"	p
+stats	stats/queue.go	/^package stats$/;"	p
+stats	stats/server.go	/^package stats$/;"	p
+stats	stats/stats.go	/^package stats$/;"	p
+statsHandler	etcdhttp/client.go	/^type statsHandler struct {$/;"	t
+statsPrefix	etcdhttp/client.go	/^	membersPrefix            = "\/v2\/members"$/;"	c
+statsQueue	stats/queue.go	/^type statsQueue struct {$/;"	t
+stop	raft.go	/^func (r *raftNode) stop() {$/;"	f
+stopWithDelay	server.go	/^func (s *EtcdServer) stopWithDelay(d time.Duration, err error) {$/;"	f
+storage	storage.go	/^type storage struct {$/;"	t
+storageRecorder	server_test.go	/^type storageRecorder struct{ testutil.Recorder }$/;"	t
+storeMemberAttributeRegexp	server.go	/^	storeRemovedMembersPrefix = path.Join(StoreAdminPrefix, "removed_members")$/;"	v
+storeMembersPrefix	server.go	/^var ($/;"	v
+storeRecorder	server_test.go	/^type storeRecorder struct{ testutil.Recorder }$/;"	t
+storeRemovedMembersPrefix	server.go	/^	storeMembersPrefix        = path.Join(StoreAdminPrefix, "members")$/;"	v
+stringp	cluster_test.go	/^func stringp(s string) *string { return &s }$/;"	f
+sync	server.go	/^func (s *EtcdServer) sync(timeout time.Duration) {$/;"	f
+testDoer	security/security_test.go	/^type testDoer struct {$/;"	t
+timeParse	member_test.go	/^func timeParse(value string) *time.Time {$/;"	f
+trimErrorPrefix	etcdhttp/client.go	/^func trimErrorPrefix(err error, prefix string) error {$/;"	f
+trimEventPrefix	etcdhttp/client.go	/^func trimEventPrefix(ev *store.Event, prefix string) *store.Event {$/;"	f
+trimNodeExternPrefix	etcdhttp/client.go	/^func trimNodeExternPrefix(n *store.NodeExtern, prefix string) *store.NodeExtern {$/;"	f
+trimPrefix	etcdhttp/client.go	/^func trimPrefix(p, prefix string) (s string) {$/;"	f
+unmarshalRequest	etcdhttp/client.go	/^func unmarshalRequest(r *http.Request, req json.Unmarshaler, w http.ResponseWriter) bool {$/;"	f
+updateResource	security/security_requests.go	/^func (s *Store) updateResource(res string, value interface{}) (etcdserver.Response, error) {$/;"	f
+upgradeDataDir	storage.go	/^func upgradeDataDir(baseDataDir string, name string, ver version.DataDirVersion) error {$/;"	f
+varsPath	etcdhttp/client.go	/^	statsPrefix              = "\/v2\/stats"$/;"	c
+verifyLocalMember	config.go	/^func (c *ServerConfig) verifyLocalMember(strict bool) error {$/;"	f
+versionPath	etcdhttp/client.go	/^	healthPath               = "\/health"$/;"	c
+waitRecorder	server_test.go	/^type waitRecorder struct {$/;"	t
+waitWithResponse	server_test.go	/^type waitWithResponse struct {$/;"	t
+writeError	etcdhttp/http.go	/^func writeError(w http.ResponseWriter, err error) {$/;"	f
+writeKeyEvent	etcdhttp/client.go	/^func writeKeyEvent(w http.ResponseWriter, ev *store.Event, rt etcdserver.RaftTimer) error {$/;"	f
+writeNoAuth	etcdhttp/client_security.go	/^func writeNoAuth(w http.ResponseWriter) {$/;"	f

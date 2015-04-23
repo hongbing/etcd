@@ -72,6 +72,7 @@ func (st *storage) SaveSnap(snap raftpb.Snapshot) error {
 	return nil
 }
 
+// 读取所有wal目录下的文件以snapshot.index开始的log数据，修复最后一个文件可能的unexpectedEOF error问题
 func readWAL(waldir string, snap walpb.Snapshot) (w *wal.WAL, id, cid types.ID, st raftpb.HardState, ents []raftpb.Entry) {
 	var (
 		err       error

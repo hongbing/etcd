@@ -149,6 +149,7 @@ type EtcdServer struct {
 
 // NewServer creates a new EtcdServer from the supplied configuration. The
 // configuration is considered static for the lifetime of the EtcdServer.
+// 根据serverConfig来创建一个EtcdServer,在Etcd的整个生命周期，配置都是静态的。
 func NewServer(cfg *ServerConfig) (*EtcdServer, error) {
 	st := store.New(StoreAdminPrefix, StoreKeysPrefix)
 	var w *wal.WAL
@@ -169,6 +170,7 @@ func NewServer(cfg *ServerConfig) (*EtcdServer, error) {
 	ss := snap.New(cfg.SnapDir())
 
 	switch {
+	//老cluster，且没有WAL
 	case !haveWAL && !cfg.NewCluster:
 		if err := cfg.VerifyJoinExisting(); err != nil {
 			return nil, err
@@ -185,6 +187,7 @@ func NewServer(cfg *ServerConfig) (*EtcdServer, error) {
 		cfg.Cluster.SetStore(st)
 		cfg.Print()
 		id, n, s, w = startNode(cfg, nil)
+	//新cluster，且没有WAL
 	case !haveWAL && cfg.NewCluster:
 		if err := cfg.VerifyBootstrap(); err != nil {
 			return nil, err
@@ -220,10 +223,12 @@ func NewServer(cfg *ServerConfig) (*EtcdServer, error) {
 		if cfg.ShouldDiscover() {
 			log.Printf("etcdserver: discovery token ignored since a cluster has already been initialized. Valid log found at %q", cfg.WALDir())
 		}
+		// 加载snapshot信息
 		snapshot, err := ss.Load()
 		if err != nil && err != snap.ErrNoSnapshot {
 			return nil, err
 		}
+		// 从snapshot恢复store的数据
 		if snapshot != nil {
 			if err := st.Recovery(snapshot.Data); err != nil {
 				log.Panicf("etcdserver: recovered store from snapshot error: %v", err)
@@ -279,6 +284,7 @@ func NewServer(cfg *ServerConfig) (*EtcdServer, error) {
 // Start prepares and starts server in a new goroutine. It is no longer safe to
 // modify a server's fields after it has been sent to Start.
 // It also starts a goroutine to publish its server information.
+// 启动Etcdserver，并且publish server的信息,清理文件，监控FD
 func (s *EtcdServer) Start() {
 	s.start()
 	go s.publish(defaultPublishRetryInterval)
@@ -303,6 +309,7 @@ func (s *EtcdServer) start() {
 	go s.run()
 }
 
+// 定时清理超过MaxFile的snapshot和wal文件
 func (s *EtcdServer) purgeFile() {
 	var serrc, werrc <-chan error
 	if s.cfg.MaxSnapFiles > 0 {
@@ -451,6 +458,7 @@ func (s *EtcdServer) StopNotify() <-chan struct{} { return s.done }
 // Quorum == true, r will be sent through consensus before performing its
 // respective operation. Do will block until an action is performed or there is
 // an error.
+// 执行request的操作,每个request带有一个resq id
 func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {
 	r.ID = s.reqIDGen.Next()
 	if r.Method == "GET" && r.Quorum {
@@ -620,6 +628,7 @@ func (s *EtcdServer) sync(timeout time.Duration) {
 // static clientURLs of the server.
 // The function keeps attempting to register until it succeeds,
 // or its server is stopped.
+// 注册server的member信息到cluster中，更新server的client urls
 func (s *EtcdServer) publish(retryInterval time.Duration) {
 	b, err := json.Marshal(s.attributes)
 	if err != nil {

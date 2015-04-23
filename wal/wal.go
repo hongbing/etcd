@@ -34,6 +34,7 @@ import (
 )
 
 const (
+	// wal文件的类型
 	metadataType int64 = iota + 1
 	entryType
 	stateType

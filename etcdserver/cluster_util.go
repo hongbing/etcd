@@ -55,6 +55,7 @@ func GetClusterFromRemotePeers(urls []string, tr *http.Transport) (*Cluster, err
 }
 
 // If logerr is true, it prints out more error messages.
+//使用http协议,依据urls从远端获取members，根据members创建cluster。
 func getClusterFromRemotePeers(urls []string, logerr bool, tr *http.Transport) (*Cluster, error) {
 	cc := &http.Client{
 		Transport: tr,

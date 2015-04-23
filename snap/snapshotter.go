@@ -78,6 +78,7 @@ func (s *Snapshotter) save(snapshot *raftpb.Snapshot) error {
 	return err
 }
 
+// 加载所有的snapshot信息
 func (s *Snapshotter) Load() (*raftpb.Snapshot, error) {
 	names, err := s.snapNames()
 	if err != nil {
@@ -94,7 +95,7 @@ func (s *Snapshotter) Load() (*raftpb.Snapshot, error) {
 	}
 	return snap, nil
 }
-
+// 依据本地snapshot地址读取snapshot文件信息
 func loadSnap(dir, name string) (*raftpb.Snapshot, error) {
 	fpath := path.Join(dir, name)
 	snap, err := Read(fpath)
@@ -169,6 +170,7 @@ func checkSuffix(names []string) []string {
 	return snaps
 }
 
+// 重命名snapshot文件名为以.broken结尾的文件
 func renameBroken(path string) {
 	brokenPath := path + ".broken"
 	if err := os.Rename(path, brokenPath); err != nil {
