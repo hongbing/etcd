@@ -56,7 +56,7 @@ type ClusterInfo interface {
 }
 
 // Cluster is a list of Members that belong to the same raft cluster
-// cluster表示member的集合，id和token唯一的标识cluster
+// 实现了ClusterInfo接口,cluster表示member的集合，id和token唯一的标识cluster
 type Cluster struct {
 	// id由所有member的url构建而来
 	id    types.ID

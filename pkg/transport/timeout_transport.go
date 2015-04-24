@@ -23,6 +23,7 @@ import (
 // NewTimeoutTransport returns a transport created using the given TLS info.
 // If read/write on the created connection blocks longer than its time limit,
 // it will return timeout error.
+// 设置30秒的keepAlive
 func NewTimeoutTransport(info TLSInfo, dialtimeoutd, rdtimeoutd, wtimeoutd time.Duration) (*http.Transport, error) {
 	tr, err := NewTransport(info)
 	if err != nil {

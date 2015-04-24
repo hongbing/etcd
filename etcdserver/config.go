@@ -109,7 +109,7 @@ func (c *ServerConfig) MemberDir() string { return path.Join(c.DataDir, "member"
 func (c *ServerConfig) WALDir() string { return path.Join(c.MemberDir(), "wal") }
 
 func (c *ServerConfig) SnapDir() string { return path.Join(c.MemberDir(), "snap") }
-
+// 是否启用服务发现
 func (c *ServerConfig) ShouldDiscover() bool { return c.DiscoveryURL != "" }
 
 func (c *ServerConfig) PrintWithInitial() { c.print(true) }
