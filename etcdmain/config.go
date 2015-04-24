@@ -85,7 +85,7 @@ type config struct {
 	ElectionMs uint
 
 	// clustering
-	//apurls：通知对等节点的urls，acurls：通知客户端的urls。
+	//apurls：节点监听其他节点同步信号的urls，acurls：节点监听客户端的urls。
 	apurls, acurls      []url.URL
 	clusterState        *flags.StringsFlag
 	dnsCluster          string
@@ -101,7 +101,7 @@ type config struct {
 	// security
 	clientTLSInfo, peerTLSInfo transport.TLSInfo
 
-	// unsafe
+	// unsafe,强制设置为新cluster
 	forceNewCluster bool
 
 	printVersion bool
@@ -263,7 +263,7 @@ func (cfg *config) Parse(arguments []string) error {
 	if err != nil {
 		return err
 	}
-
+	// 选举Timeout应该大于心跳timeout的5倍
 	if 5*cfg.TickMs > cfg.ElectionMs {
 		return fmt.Errorf("-election-timeout[%vms] should be at least as 5 times as -heartbeat-interval[%vms]", cfg.ElectionMs, cfg.TickMs)
 	}
@@ -284,4 +284,5 @@ func (cfg config) isProxy() bool               { return cfg.proxy.String() != pr
 func (cfg config) isReadonlyProxy() bool       { return cfg.proxy.String() == proxyFlagReadonly }
 func (cfg config) shouldFallbackToProxy() bool { return cfg.fallback.String() == fallbackFlagProxy }
 
+// 选举timeout大于heartbeat timeout的倍数
 func (cfg config) electionTicks() int { return int(cfg.ElectionMs / cfg.TickMs) }

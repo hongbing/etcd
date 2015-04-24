@@ -63,6 +63,7 @@ type handler struct {
 	cid types.ID
 }
 
+// 只处理HTTP POST请求
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		w.Header().Set("Allow", "POST")
@@ -116,6 +117,7 @@ type streamHandler struct {
 	cid        types.ID
 }
 
+// 只处理HTTP Get请求
 func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		w.Header().Set("Allow", "GET")

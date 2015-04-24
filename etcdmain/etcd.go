@@ -54,7 +54,7 @@ var (
 
 //入口
 func Main() {
-	//新建配置，使用默认配置
+	//新建配置，使用默认配置,配置来自于命令行或者环境变量
 	cfg := NewConfig()
 	//解析命令行参数
 	err := cfg.Parse(os.Args[1:])
@@ -64,7 +64,7 @@ func Main() {
 	}
 
 	var stopped <-chan struct{}
-	//设置CLuster name
+	//设置Cluster name
 	if cfg.name != defaultName && cfg.initialCluster == initialClusterFromName(defaultName) {
 		cfg.initialCluster = initialClusterFromName(cfg.name)
 	}
@@ -78,7 +78,7 @@ func Main() {
 	if which != dirEmpty {
 		log.Printf("etcd: already initialized as %v before, starting as etcd %v...", which, which)
 	}
-	//根据配置参数决定是启动proxy还是etcdServer
+	//根据配置参数决定是以proxy还是etcdServer模式启动
 	shouldProxy := cfg.isProxy() || which == dirProxy
 	if !shouldProxy {
 		stopped, err = startEtcd(cfg)
@@ -311,7 +311,7 @@ func startProxy(cfg *config) error {
 		Handler: ph,
 		Info:    cfg.corsInfo,
 	}
-
+	// proxy只处理HTTP的GET请求
 	if cfg.isReadonlyProxy() {
 		ph = proxy.NewReadonlyHandler(ph)
 	}
@@ -336,18 +336,20 @@ func setupCluster(cfg *config) (*etcdserver.Cluster, error) {
 	var cls *etcdserver.Cluster
 	var err error
 	switch {
-	//服务发现url不为空,使用集群服务发现
+	//使用自身的服务发现
 	case cfg.durl != "":
 		// If using discovery, generate a temporary cluster based on
 		// self's advertised peer URLs
 		clusterStr := genClusterString(cfg.name, cfg.apurls)
 		cls, err = etcdserver.NewClusterFromString(cfg.durl, clusterStr)
+	// 使用DNS服务发现
 	case cfg.dnsCluster != "":
 		clusterStr, clusterToken, err := discovery.SRVGetCluster(cfg.name, cfg.dnsCluster, cfg.initialClusterToken, cfg.apurls)
 		if err != nil {
 			return nil, err
 		}
 		cls, err = etcdserver.NewClusterFromString(clusterToken, clusterStr)
+	// 默认使用静态配置启动
 	default:
 		// We're statically configured, and cluster has appropriately been set.
 		cls, err = etcdserver.NewClusterFromString(cfg.initialClusterToken, cfg.initialCluster)

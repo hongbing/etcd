@@ -56,6 +56,7 @@ const (
 )
 
 // NewClientHandler generates a muxed http.Handler with the given parameters to serve etcd client requests.
+// 生成复用的http.Handler来处理client的请求
 func NewClientHandler(server *etcdserver.EtcdServer) http.Handler {
 	sec := security.NewStore(server, defaultServerTimeout)
 

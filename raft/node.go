@@ -280,7 +280,7 @@ func (n *node) run(r *raft) {
 			}
 			lead = r.lead
 		}
-
+		//处理channel中的各类消息 
 		select {
 		// TODO: maybe buffer the config propose if there exists one (the way
 		// described in raft dissertation)
@@ -293,6 +293,7 @@ func (n *node) run(r *raft) {
 			if _, ok := r.prs[m.From]; ok || !IsResponseMsg(m) {
 				r.Step(m) // raft never returns an error
 			}
+		// 配置信息
 		case cc := <-n.confc:
 			if cc.NodeID == None {
 				r.resetPendingConf()

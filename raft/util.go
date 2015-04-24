@@ -45,7 +45,9 @@ func max(a, b uint64) uint64 {
 	}
 	return b
 }
-
+/**
+* 本地消息：MsgHup，MsgBeat，MsgUnreachable，MsgSnapStatus
+*/
 func IsLocalMsg(m pb.Message) bool {
 	return m.Type == pb.MsgHup || m.Type == pb.MsgBeat || m.Type == pb.MsgUnreachable || m.Type == pb.MsgSnapStatus
 }
