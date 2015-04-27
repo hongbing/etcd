@@ -63,6 +63,7 @@ type Store interface {
 	DeleteExpiredKeys(cutoff time.Time)
 }
 
+// storage,负责存储键值对信息
 type store struct {
 	Root           *node
 	WatcherHub     *watcherHub
