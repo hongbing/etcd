@@ -70,6 +70,7 @@ type RaftTimer interface {
 // apply contains entries, snapshot be applied.
 // After applied all the items, the application needs
 // to send notification to done chan.
+// 包含需要apply的entries和snap
 type apply struct {
 	entries  []raftpb.Entry
 	snapshot raftpb.Snapshot
@@ -106,6 +107,7 @@ type raftNode struct {
 	done    chan struct{}
 }
 
+// 启动raftNode
 func (r *raftNode) run() {
 	r.stopped = make(chan struct{})
 	r.done = make(chan struct{})
@@ -143,7 +145,7 @@ func (r *raftNode) run() {
 			case <-r.stopped:
 				return
 			}
-
+			// 保存snapshot
 			if !raft.IsEmptySnap(rd.Snapshot) {
 				if err := r.storage.SaveSnap(rd.Snapshot); err != nil {
 					log.Fatalf("etcdraft: save snapshot error: %v", err)
@@ -155,7 +157,7 @@ func (r *raftNode) run() {
 				log.Fatalf("etcdraft: save state and entries error: %v", err)
 			}
 			r.raftStorage.Append(rd.Entries)
-
+			// 发送消息给远端peer
 			r.s.send(rd.Messages)
 
 			<-apply.done
@@ -192,6 +194,7 @@ func (r *raftNode) resumeSending() {
 	p.Resume()
 }
 
+// 启动状态机实例node,
 func startNode(cfg *ServerConfig, ids []types.ID) (id types.ID, n raft.Node, s *raft.MemoryStorage, w *wal.WAL) {
 	var err error
 	member := cfg.Cluster.MemberByName(cfg.Name)
@@ -226,6 +229,7 @@ func startNode(cfg *ServerConfig, ids []types.ID) (id types.ID, n raft.Node, s *
 		MaxSizePerMsg:   maxSizePerMsg,
 		MaxInflightMsgs: maxInflightMsgs,
 	}
+	// 启动一个raft状态机实例Node
 	n = raft.StartNode(c, peers)
 	raftStatus = n.Status
 	return

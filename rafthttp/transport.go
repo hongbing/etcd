@@ -103,6 +103,7 @@ func (t *transport) Get(id types.ID) Peer {
 	return t.peers[id]
 }
 
+// 向远端peer发送消息
 func (t *transport) Send(msgs []raftpb.Message) {
 	for _, m := range msgs {
 		// intentionally dropped message
@@ -115,7 +116,7 @@ func (t *transport) Send(msgs []raftpb.Message) {
 			log.Printf("etcdserver: send message to unknown receiver %s", to)
 			continue
 		}
-
+		// 统计发送的appendEntry的记录
 		if m.Type == raftpb.MsgApp {
 			t.serverStats.SendAppendReq(m.Size())
 		}

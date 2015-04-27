@@ -30,7 +30,7 @@ import (
 	"github.com/coreos/etcd/wal"
 	"github.com/coreos/etcd/wal/walpb"
 )
-// 持久化存储
+// log entry和snapshot的持久化存储
 type Storage interface {
 	// Save function saves ents and state to the underlying stable storage.
 	// Save MUST block until st and ents are on stable storage.
@@ -57,10 +57,12 @@ func (st *storage) SaveSnap(snap raftpb.Snapshot) error {
 		Index: snap.Metadata.Index,
 		Term:  snap.Metadata.Term,
 	}
+	// 设置WAL中的snapshot的情况
 	err := st.WAL.SaveSnapshot(walsnap)
 	if err != nil {
 		return err
 	}
+	// 保存snap文件
 	err = st.Snapshotter.SaveSnap(snap)
 	if err != nil {
 		return err

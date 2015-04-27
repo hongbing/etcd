@@ -41,6 +41,7 @@ type Attributes struct {
 	ClientURLs []string `json:"clientURLs,omitempty"`
 }
 
+// Member表示raft的实例,它掌管着一个Node，并且为client提供服务 
 type Member struct {
 	ID types.ID `json:"id"`
 	RaftAttributes

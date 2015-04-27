@@ -10,6 +10,7 @@
 // servers should accept a Context.  The chain of function calls between must
 // propagate the Context, optionally replacing it with a modified copy created
 // using WithDeadline, WithTimeout, WithCancel, or WithValue.
+// 函数调用链之间必须传递Context
 //
 // Programs that use Contexts should follow these rules to keep interfaces
 // consistent across packages and enable static analysis tools to check context

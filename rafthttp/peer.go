@@ -153,6 +153,7 @@ func startPeer(tr http.RoundTripper, urls types.URLs, local, to, cid types.ID, r
 		reader := startStreamReader(tr, picker, streamTypeMessage, local, to, cid, p.recvc, p.propc)
 		for {
 			select {
+			// 处理发送给远端peer的消息
 			case m := <-p.sendc:
 				if paused {
 					continue

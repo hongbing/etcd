@@ -101,7 +101,7 @@ func (rd Ready) containsUpdates() bool {
 }
 
 // Node represents a node in a raft cluster.
-// node代表一个状态机实例
+// node代表一个状态机实例,具有唯一标识,当node状态为leader时，它记录着其他node的progress
 type Node interface {
 	// Tick increments the internal logical clock for the Node by a single tick. Election
 	// timeouts and heartbeat timeouts are in units of ticks.
@@ -120,6 +120,7 @@ type Node interface {
 	Step(ctx context.Context, msg pb.Message) error
 	// Ready returns a channel that returns the current point-in-time state
 	// Users of the Node must call Advance after applying the state returned by Ready
+	// 返回当前时间点的状态的channel
 	Ready() <-chan Ready
 	// Advance notifies the Node that the application has applied and saved progress up to the last Ready.
 	// It prepares the node to return the next available Ready.
@@ -147,7 +148,7 @@ type Peer struct {
 // StartNode returns a new Node given configuration and a list of raft peers.
 // It appends a ConfChangeAddNode entry for each given peer to the initial log.
 
-//启动一个Node，启动的节点会记录其它peer的conf信息,所有的term都为1
+//启动一个状态机instance Node，启动的节点会记录其它peer的conf信息,所有的term都为1
 //会添加ConfChangeAddNode entry到log中。初始状态设置为follower
 func StartNode(c *Config, peers []Peer) Node {
 	r := newRaft(c)

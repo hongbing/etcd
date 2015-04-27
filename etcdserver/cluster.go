@@ -57,6 +57,7 @@ type ClusterInfo interface {
 
 // Cluster is a list of Members that belong to the same raft cluster
 // 实现了ClusterInfo接口,cluster表示member的集合，id和token唯一的标识cluster
+// cluster接收来自于member的propose，并且把propose提交和应用到local store
 type Cluster struct {
 	// id由所有member的url构建而来
 	id    types.ID
@@ -184,6 +185,7 @@ func (c *Cluster) MemberIDs() []types.ID {
 	return ids
 }
 
+// 对于已经removed的node，将node的id保存在removed数组中。
 func (c *Cluster) IsIDRemoved(id types.ID) bool {
 	c.Lock()
 	defer c.Unlock()
