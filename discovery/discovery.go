@@ -162,6 +162,7 @@ func (d *discovery) joinCluster(config string) (string, error) {
 	return nodesToCluster(all), nil
 }
 
+// 获得cluster的信息. 
 func (d *discovery) getCluster() (string, error) {
 	nodes, size, index, err := d.checkCluster()
 	if err != nil {
@@ -195,6 +196,9 @@ func (d *discovery) createSelf(contents string) error {
 	return err
 }
 
+// 取得cluster配置中的member的size
+// 如discovery url: https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83
+// 取得size的url=https://myetcd.local/v2/keys/discovery/6c007a14875d53d9bf0ef5a6fc0257c817f0fb83/_config/size
 func (d *discovery) checkCluster() ([]*client.Node, int, uint64, error) {
 	configKey := path.Join("/", d.cluster, "_config")
 	ctx, cancel := context.WithTimeout(context.Background(), client.DefaultRequestTimeout)
@@ -273,7 +277,8 @@ func (d *discovery) waitNodesRetry() ([]*client.Node, error) {
 	}
 	return nil, ErrTooManyRetries
 }
-
+// 监测token目录下所有节点的数量，如果数量不够，则循环等待。
+// 当数量达到要求时，才结束，进入正常的启动过程。
 func (d *discovery) waitNodes(nodes []*client.Node, size int, index uint64) ([]*client.Node, error) {
 	if len(nodes) > size {
 		nodes = nodes[:size]

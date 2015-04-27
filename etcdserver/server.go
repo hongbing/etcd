@@ -170,7 +170,7 @@ func NewServer(cfg *ServerConfig) (*EtcdServer, error) {
 	ss := snap.New(cfg.SnapDir())
 
 	switch {
-	//老cluster，且没有WAL
+	//已经存在的cluster，且没有WAL
 	case !haveWAL && !cfg.NewCluster:
 		if err := cfg.VerifyJoinExisting(); err != nil {
 			return nil, err
@@ -196,6 +196,7 @@ func NewServer(cfg *ServerConfig) (*EtcdServer, error) {
 		if isMemberBootstrapped(cfg.Cluster, cfg.Name, cfg.Transport) {
 			return nil, fmt.Errorf("member %s has already been bootstrapped", m.ID)
 		}
+		// 对于新的cluster，启动自身的服务发现功能
 		if cfg.ShouldDiscover() {
 			str, err := discovery.JoinCluster(cfg.DiscoveryURL, cfg.DiscoveryProxy, m.ID, cfg.Cluster.String())
 			if err != nil {
@@ -349,6 +350,8 @@ func (s *EtcdServer) ReportSnapshot(id uint64, status raft.SnapshotStatus) {
 	s.r.ReportSnapshot(id, status)
 }
 
+// 启动EtcdServer
+// 1. 启动raftNode 2. 
 func (s *EtcdServer) run() {
 	snap, err := s.r.raftStorage.Snapshot()
 	if err != nil {
@@ -370,6 +373,7 @@ func (s *EtcdServer) run() {
 	var shouldstop bool
 	for {
 		select {
+		// apply包含需要apply的entry和snapshot
 		case apply := <-s.r.apply():
 			// apply snapshot
 			if !raft.IsEmptySnap(apply.snapshot) {
@@ -658,6 +662,7 @@ func (s *EtcdServer) publish(retryInterval time.Duration) {
 	}
 }
 
+// 发送message,已经移除的node不发送消息。
 func (s *EtcdServer) send(ms []raftpb.Message) {
 	for i, _ := range ms {
 		if s.Cluster.IsIDRemoved(types.ID(ms[i].To)) {
@@ -800,6 +805,7 @@ func (s *EtcdServer) applyConfChange(cc raftpb.ConfChange, confState *raftpb.Con
 }
 
 // TODO: non-blocking snapshot
+// 创建snapshot并保存
 func (s *EtcdServer) snapshot(snapi uint64, confState raftpb.ConfState) {
 	clone := s.store.Clone()
 

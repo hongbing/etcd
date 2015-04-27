@@ -85,7 +85,8 @@ type config struct {
 	ElectionMs uint
 
 	// clustering
-	//apurls：节点监听其他节点同步信号的urls，acurls：节点监听客户端的urls。
+	//apurls：节点监听其他节点同步信号的urls，acurls：节点监听客户端HTTP请求的urls。
+	// apurls和acurls只会出现在cluster采用静态配置的时候,也即需要跟-initial一同出现
 	apurls, acurls      []url.URL
 	clusterState        *flags.StringsFlag
 	dnsCluster          string

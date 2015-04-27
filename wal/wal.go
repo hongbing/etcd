@@ -484,7 +484,7 @@ func (w *WAL) Save(st raftpb.HardState, ents []raftpb.Entry) error {
 	// TODO: add a test for this code path when refactoring the tests
 	return w.cut()
 }
-
+// 设置wal里snapshot的状况
 func (w *WAL) SaveSnapshot(e walpb.Snapshot) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()

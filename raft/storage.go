@@ -66,6 +66,18 @@ type Storage interface {
 // MemoryStorage implements the Storage interface backed by an
 // in-memory array.
 // 数据状态和节点索引的内存存储
+/*
+*
+	MemoryStorage ents[]
+	 -----------------------------------------------------
+	| dummy| ents[0] | ents[1] | ents[2] |
+	 -----------------------------------------------------
+	      ^ ------------>			^
+	FirstIndex                                LastIndex
+	=ents[0].index + 1	       = ents[0].index + len(ents) -1  
+*
+*/
+
 type MemoryStorage struct {
 	// Protects access to all fields. Most methods of MemoryStorage are
 	// run on the raft goroutine, but Append() is run on an application
@@ -79,6 +91,7 @@ type MemoryStorage struct {
 }
 
 // NewMemoryStorage creates an empty MemoryStorage.
+// ents[0]为一个dummy entry
 func NewMemoryStorage() *MemoryStorage {
 	return &MemoryStorage{
 		// When starting from scratch populate the list with a dummy entry at term zero.
@@ -147,7 +160,7 @@ func (ms *MemoryStorage) FirstIndex() (uint64, error) {
 	return ms.firstIndex(), nil
 }
 
-// 为什么是ms.ents[0].Index + 1, 而不是ms.ents[0].Index
+// 为什么是ms.ents[0].Index + 1, 因为存在着一个dummy entry
 func (ms *MemoryStorage) firstIndex() uint64 {
 	return ms.ents[0].Index + 1
 }

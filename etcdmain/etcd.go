@@ -340,6 +340,7 @@ func setupCluster(cfg *config) (*etcdserver.Cluster, error) {
 	case cfg.durl != "":
 		// If using discovery, generate a temporary cluster based on
 		// self's advertised peer URLs
+		// 用自身单个的url构成一个服务发现集群
 		clusterStr := genClusterString(cfg.name, cfg.apurls)
 		cls, err = etcdserver.NewClusterFromString(cfg.durl, clusterStr)
 	// 使用DNS服务发现

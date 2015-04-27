@@ -140,6 +140,7 @@ func (ss *ServerStats) SendAppendReq(reqSize int) {
 	ss.SendAppendRequestCnt++
 }
 
+//记录raftNode变成leader的状态
 func (ss *ServerStats) BecomeLeader() {
 	if ss.State != raft.StateLeader {
 		ss.State = raft.StateLeader
