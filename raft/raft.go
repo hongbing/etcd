@@ -79,6 +79,7 @@ type Config struct {
 	// states to be stored in storage. raft reads the persisted entires
 	// and states out of Storage when it needs. raft reads out the previous
 	// state and configuration out of storage when restarting.
+	// 内存实现
 	Storage Storage
 	// Applied is the last applied index. It should only be set when restarting
 	// raft. raft will not return entries to the application smaller or equal to Applied.
@@ -740,7 +741,7 @@ func (r *raft) addNode(id uint64) {
 		// initial bootstrapping entries are applied twice).
 		return
 	}
-
+	// 刚启动时，match为0,next为lastIndex+ 1
 	r.setProgress(id, 0, r.raftLog.lastIndex()+1)
 	r.pendingConf = false
 }

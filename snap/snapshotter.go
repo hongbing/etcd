@@ -44,6 +44,7 @@ var (
 )
 
 type Snapshotter struct {
+	// snap地址
 	dir string
 }
 
@@ -95,6 +96,7 @@ func (s *Snapshotter) Load() (*raftpb.Snapshot, error) {
 	}
 	return snap, nil
 }
+
 // 依据本地snapshot地址读取snapshot文件信息
 func loadSnap(dir, name string) (*raftpb.Snapshot, error) {
 	fpath := path.Join(dir, name)

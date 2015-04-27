@@ -195,6 +195,7 @@ func (r *raftNode) resumeSending() {
 }
 
 // 启动状态机实例node,
+// ids为成员id
 func startNode(cfg *ServerConfig, ids []types.ID) (id types.ID, n raft.Node, s *raft.MemoryStorage, w *wal.WAL) {
 	var err error
 	member := cfg.Cluster.MemberByName(cfg.Name)

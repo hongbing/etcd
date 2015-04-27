@@ -89,6 +89,7 @@ func parseWalName(str string) (seq, index uint64, err error) {
 	return seq, index, err
 }
 
+// wal文件名 seq-index.wal
 func walName(seq, index uint64) string {
 	return fmt.Sprintf("%016x-%016x.wal", seq, index)
 }
