@@ -36,6 +36,7 @@ func newDirector(urlsFunc GetProxyURLs) *director {
 		uf: urlsFunc,
 	}
 	d.refresh()
+	// 定时刷新Endpoint
 	go func() {
 		for {
 			select {

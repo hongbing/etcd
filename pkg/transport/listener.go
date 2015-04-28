@@ -30,7 +30,7 @@ func NewListener(addr string, scheme string, info TLSInfo) (net.Listener, error)
 	if err != nil {
 		return nil, err
 	}
-
+	// 采用secure模式
 	if scheme == "https" {
 		if info.Empty() {
 			return nil, fmt.Errorf("cannot listen on TLS for %s: KeyFile and CertFile are not presented", scheme+"://"+addr)
@@ -39,7 +39,7 @@ func NewListener(addr string, scheme string, info TLSInfo) (net.Listener, error)
 		if err != nil {
 			return nil, err
 		}
-
+		// 包装内部listener创建TLS listener, cfg必须包括certificate
 		l = tls.NewListener(l, cfg)
 	}
 

@@ -75,6 +75,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Etcd-Cluster-ID", wcid)
 
 	gcid := r.Header.Get("X-Etcd-Cluster-ID")
+	// 不处理来自不同cluster的post请求
 	if gcid != wcid {
 		log.Printf("rafthttp: request ignored due to cluster ID mismatch got %s want %s", gcid, wcid)
 		http.Error(w, "clusterID mismatch", http.StatusPreconditionFailed)
@@ -96,6 +97,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error unmarshaling raft message", http.StatusBadRequest)
 		return
 	}
+	// 处理post request
 	if err := h.r.Process(context.TODO(), m); err != nil {
 		switch v := err.(type) {
 		case writerToResponse:
@@ -147,6 +149,7 @@ func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid from", http.StatusNotFound)
 		return
 	}
+	// 取得远端get请求的peer
 	p := h.peerGetter.Get(from)
 	if p == nil {
 		log.Printf("rafthttp: fail to find sender %s", from)

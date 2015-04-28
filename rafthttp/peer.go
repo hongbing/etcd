@@ -169,6 +169,7 @@ func startPeer(tr http.RoundTripper, urls types.URLs, local, to, cid types.ID, r
 					log.Printf("peer: dropping %s to %s since %s with %d-size buffer is blocked",
 						m.Type, p.id, name, bufSizeMap[name])
 				}
+			// 处理接收远端peer的消息
 			case mm := <-p.recvc:
 				if mm.Type == raftpb.MsgApp {
 					msgAppReader.updateMsgAppTerm(mm.Term)

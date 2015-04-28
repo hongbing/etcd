@@ -147,6 +147,7 @@ type raft struct {
 	lead uint64
 
 	// New configuration is ignored if there exists unapplied configuration.
+	// 是否挂起新的配置
 	pendingConf bool
 
 	//上一次消息传输过后流逝的时间
@@ -470,7 +471,9 @@ func (r *raft) poll(id uint64, v bool) (granted int) {
 	return granted
 }
 
+// 根据pb.Message的类型进行相应的状态处理
 func (r *raft) Step(m pb.Message) error {
+	// 开启一轮新的选举
 	if m.Type == pb.MsgHup {
 		raftLogger.Infof("raft: %x is starting a new election at term %d", r.id, r.Term)
 		r.campaign()
@@ -481,14 +484,17 @@ func (r *raft) Step(m pb.Message) error {
 	switch {
 	case m.Term == 0:
 		// local message
+	// 处理来自term比自己大的消息,重置自己的term为m.term,设置leader为None
 	case m.Term > r.Term:
 		lead := m.From
+		// 如果是投票消息，先设置leader为None，在选举的时候会选出leader
 		if m.Type == pb.MsgVote {
 			lead = None
 		}
 		raftLogger.Infof("raft: %x [term: %d] received a %s message with higher term from %x [term: %d]",
 			r.id, r.Term, m.Type, m.From, m.Term)
 		r.becomeFollower(m.Term, lead)
+	// 拒绝来自term比自己小的消息,直接返回nil
 	case m.Term < r.Term:
 		// ignore
 		raftLogger.Infof("raft: %x [term: %d] ignored a %s message with lower term from %x [term: %d]",
@@ -741,7 +747,7 @@ func (r *raft) addNode(id uint64) {
 		// initial bootstrapping entries are applied twice).
 		return
 	}
-	// 刚启动时，match为0,next为lastIndex+ 1
+	// node刚启动时，match为0,next为lastIndex+ 1
 	r.setProgress(id, 0, r.raftLog.lastIndex()+1)
 	r.pendingConf = false
 }

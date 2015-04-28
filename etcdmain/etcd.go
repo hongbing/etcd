@@ -316,6 +316,7 @@ func startProxy(cfg *config) error {
 		ph = proxy.NewReadonlyHandler(ph)
 	}
 	// Start a proxy server goroutine for each listen address
+	// 针对每一个client，创建监听器负责处理client http连接上的去请求
 	for _, u := range cfg.lcurls {
 		l, err := transport.NewListener(u.Host, u.Scheme, cfg.clientTLSInfo)
 		if err != nil {
@@ -325,6 +326,12 @@ func startProxy(cfg *config) error {
 		host := u.Host
 		go func() {
 			log.Print("proxy: listening for client requests on ", host)
+			/**
+			*  http.Serve:Serve accepts incoming HTTP connections on the listener l, 
+			*  creating a new service goroutine for each. The service goroutines read requests and then call handler to reply to them. 
+			* Handler is typically nil, in which case the DefaultServeMux is used. 
+			* 接收listener上的incoming http连接，handler负责回复
+			*/
 			log.Fatal(http.Serve(l, ph))
 		}()
 	}

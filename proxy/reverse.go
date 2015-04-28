@@ -46,6 +46,7 @@ func removeSingleHopHeaders(hdrs *http.Header) {
 	}
 }
 
+// 反向代理
 type reverseProxy struct {
 	director  *director
 	transport http.RoundTripper

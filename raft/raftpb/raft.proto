@@ -32,9 +32,11 @@ message Snapshot {
 }
 
 enum MessageType {
+	//表示开启一轮新的选举 
 	MsgHup             = 0;
 	MsgBeat            = 1;
 	MsgProp            = 2;
+	// append entry message
 	MsgApp             = 3;
 	MsgAppResp         = 4;
 	MsgVote            = 5;
@@ -70,12 +72,14 @@ message ConfState {
 	repeated uint64 nodes = 1 [(gogoproto.nullable) = false];
 }
 
+//配置变更类型
 enum ConfChangeType {
 	ConfChangeAddNode    = 0;
 	ConfChangeRemoveNode = 1;
 	ConfChangeUpdateNode = 2;
 }
 
+// 配置变更消息
 message ConfChange {
 	required uint64          ID      = 1 [(gogoproto.nullable) = false];
 	required ConfChangeType  Type    = 2 [(gogoproto.nullable) = false];

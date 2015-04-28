@@ -37,9 +37,10 @@ var (
 
 // SoftState provides state that is useful for logging and debugging.
 // The state is volatile and does not need to be persisted to the WAL.
-// SoftState作为日志和调试使用
+// SoftState记录leader id 和自身的状态
 type SoftState struct {
 	Lead      uint64
+	// follower,candidate,leader
 	RaftState StateType
 }
 
@@ -50,6 +51,7 @@ func (a *SoftState) equal(b *SoftState) bool {
 // Ready encapsulates the entries and messages that are ready to read,
 // be saved to stable storage, committed or sent to other peers.
 // All fields in Ready are read-only.
+// Ready封装了准备读，保存到storage，发送到peer的entry和message.
 type Ready struct {
 	// The current volatile state of a Node.
 	// SoftState will be nil if there is no update.
@@ -203,7 +205,9 @@ func RestartNode(c *Config) Node {
 // node is the canonical implementation of the Node interface
 type node struct {
 	propc      chan pb.Message
+	// 接收消息的channel
 	recvc      chan pb.Message
+	// 配置变更的channel
 	confc      chan pb.ConfChange
 	confstatec chan pb.ConfState
 	readyc     chan Ready
@@ -241,7 +245,8 @@ func (n *node) Stop() {
 	<-n.done
 }
 
-//真正启动node的函数
+//真正启动node的函数,for循环处理node的channel中的各类消息 
+// 初始化leader为None
 func (n *node) run(r *raft) {
 	var propc chan pb.Message
 	var readyc chan Ready
@@ -281,7 +286,7 @@ func (n *node) run(r *raft) {
 			}
 			lead = r.lead
 		}
-		//处理channel中的各类消息 
+		//处理node的channel中的各类消息 
 		select {
 		// TODO: maybe buffer the config propose if there exists one (the way
 		// described in raft dissertation)
@@ -294,7 +299,7 @@ func (n *node) run(r *raft) {
 			if _, ok := r.prs[m.From]; ok || !IsResponseMsg(m) {
 				r.Step(m) // raft never returns an error
 			}
-		// 配置信息
+		// 处理配置信息channel中的内容
 		case cc := <-n.confc:
 			if cc.NodeID == None {
 				r.resetPendingConf()
@@ -372,6 +377,7 @@ func (n *node) Tick() {
 
 func (n *node) Campaign(ctx context.Context) error { return n.step(ctx, pb.Message{Type: pb.MsgHup}) }
 
+// Propose 会将data存入到node的recv channel中
 func (n *node) Propose(ctx context.Context, data []byte) error {
 	return n.step(ctx, pb.Message{Type: pb.MsgProp, Entries: []pb.Entry{{Data: data}}})
 }
@@ -400,7 +406,7 @@ func (n *node) step(ctx context.Context, m pb.Message) error {
 	if m.Type == pb.MsgProp {
 		ch = n.propc
 	}
-
+	// 将消息写入到raftNode的recvc channel中
 	select {
 	case ch <- m:
 		return nil

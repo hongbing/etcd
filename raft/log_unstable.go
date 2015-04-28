@@ -23,6 +23,9 @@ import pb "github.com/coreos/etcd/raft/raftpb"
 // unstable表示未提交或未被状态机执行的entry，snapshot的一种状态。
 // unstable的offset的前一个即为已经提交的Entry的index，offset既可能大于storage中的hi log 位置，
 // 也可能小于，当小于时，提交的时候需要执行截断处理。
+
+// unstable是否表示当follower的entry与leader的entry不匹配的时候，
+// 需要将leader的entry传给follower覆盖其匹配entry之后的数据,这时follower接收到的snapshot的数据表示unstable
 type unstable struct {
 	// the incoming unstable snapshot, if any.
 	snapshot *pb.Snapshot

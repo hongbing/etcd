@@ -150,6 +150,7 @@ type EtcdServer struct {
 // NewServer creates a new EtcdServer from the supplied configuration. The
 // configuration is considered static for the lifetime of the EtcdServer.
 // 根据serverConfig来创建一个EtcdServer,在Etcd的整个生命周期，配置都是静态的。
+// 启动Node
 func NewServer(cfg *ServerConfig) (*EtcdServer, error) {
 	st := store.New(StoreAdminPrefix, StoreKeysPrefix)
 	var w *wal.WAL
@@ -333,6 +334,10 @@ func (s *EtcdServer) ID() types.ID { return s.id }
 
 func (s *EtcdServer) RaftHandler() http.Handler { return s.r.transport.Handler() }
 
+/**
+* EtcdServer实现<link>rafthttp.Raft</link>接口
+*/
+// 处理外部的request
 func (s *EtcdServer) Process(ctx context.Context, m raftpb.Message) error {
 	if s.Cluster.IsIDRemoved(types.ID(m.From)) {
 		log.Printf("etcdserver: reject message from removed member %s", types.ID(m.From).String())
@@ -351,7 +356,7 @@ func (s *EtcdServer) ReportSnapshot(id uint64, status raft.SnapshotStatus) {
 }
 
 // 启动EtcdServer
-// 1. 启动raftNode 2. 
+// 1. 启动raftNode  
 func (s *EtcdServer) run() {
 	snap, err := s.r.raftStorage.Snapshot()
 	if err != nil {
@@ -462,7 +467,8 @@ func (s *EtcdServer) StopNotify() <-chan struct{} { return s.done }
 // Quorum == true, r will be sent through consensus before performing its
 // respective operation. Do will block until an action is performed or there is
 // an error.
-// 执行request的操作,每个request带有一个resq id
+// 执行request的Method,如果Method是POST，PUT，DELETE，Quorum的GET，
+// 那么在执行操作之前会进行一致性处理,每个request带有一个resq id
 func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {
 	r.ID = s.reqIDGen.Next()
 	if r.Method == "GET" && r.Quorum {
@@ -480,7 +486,7 @@ func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {
 		// might be sampling?
 		start := time.Now()
 		s.r.Propose(ctx, data)
-
+		// propose挂起数加1
 		proposePending.Inc()
 		defer proposePending.Dec()
 

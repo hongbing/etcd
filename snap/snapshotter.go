@@ -63,7 +63,7 @@ func (s *Snapshotter) SaveSnap(snapshot raftpb.Snapshot) error {
 
 func (s *Snapshotter) save(snapshot *raftpb.Snapshot) error {
 	start := time.Now()
-
+	// snapshot文件名
 	fname := fmt.Sprintf("%016x-%016x%s", snapshot.Metadata.Term, snapshot.Metadata.Index, snapSuffix)
 	b := pbutil.MustMarshal(snapshot)
 	crc := crc32.Update(0, crcTable, b)
@@ -79,7 +79,7 @@ func (s *Snapshotter) save(snapshot *raftpb.Snapshot) error {
 	return err
 }
 
-// 加载所有的snapshot信息
+// 加载最新的snapshot文件
 func (s *Snapshotter) Load() (*raftpb.Snapshot, error) {
 	names, err := s.snapNames()
 	if err != nil {
@@ -142,6 +142,7 @@ func Read(snapname string) (*raftpb.Snapshot, error) {
 
 // snapNames returns the filename of the snapshots in logical time order (from newest to oldest).
 // If there is no available snapshots, an ErrNoSnapshot will be returned.
+//按最新到最老的顺序排列snapshot文件名
 func (s *Snapshotter) snapNames() ([]string, error) {
 	dir, err := os.Open(s.dir)
 	if err != nil {
