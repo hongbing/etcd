@@ -210,7 +210,9 @@ type node struct {
 	// 配置变更的channel
 	confc      chan pb.ConfChange
 	confstatec chan pb.ConfState
+	// 准备
 	readyc     chan Ready
+	// 进阶
 	advancec   chan struct{}
 	tickc      chan struct{}
 	done       chan struct{}

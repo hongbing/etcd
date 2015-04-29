@@ -292,7 +292,7 @@ func (k *httpKeysAPI) Set(ctx context.Context, key, val string, opts *SetOptions
 		act.PrevExist = opts.PrevExist
 		act.TTL = opts.TTL
 	}
-
+	// httpclient执行
 	resp, body, err := k.client.Do(ctx, act)
 	if err != nil {
 		return nil, err
@@ -301,6 +301,7 @@ func (k *httpKeysAPI) Set(ctx context.Context, key, val string, opts *SetOptions
 	return unmarshalHTTPResponse(resp.StatusCode, resp.Header, body)
 }
 
+//客户端创建K-V对
 func (k *httpKeysAPI) Create(ctx context.Context, key, val string) (*Response, error) {
 	return k.Set(ctx, key, val, &SetOptions{PrevExist: PrevNoExist})
 }

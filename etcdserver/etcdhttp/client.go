@@ -114,6 +114,7 @@ type keysHandler struct {
 	timeout     time.Duration
 }
 
+// 处理client和server之间的request
 func (h *keysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !allowMethod(w, r.Method, "HEAD", "GET", "PUT", "POST", "DELETE") {
 		return
@@ -168,6 +169,7 @@ func (h *deprecatedMachinesHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 	w.Write([]byte(strings.Join(endpoints, ", ")))
 }
 
+// raft实例处理器
 type membersHandler struct {
 	sec         *security.Store
 	server      etcdserver.Server
@@ -175,6 +177,7 @@ type membersHandler struct {
 	clock       clockwork.Clock
 }
 
+// 处理raft server之间的request
 func (h *membersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !allowMethod(w, r.Method, "GET", "POST", "DELETE", "PUT") {
 		return
@@ -199,6 +202,7 @@ func (h *membersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		case "leader":
 			id := h.server.Leader()
+			// leader id 等于0,表明在选举阶段还没有选出leader，此时客户端的请求失败
 			if id == 0 {
 				writeError(w, httptypes.NewHTTPError(http.StatusServiceUnavailable, "During election"))
 				return

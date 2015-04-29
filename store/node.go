@@ -36,6 +36,7 @@ var Permanent time.Time
 // node is the basic element in the store system.
 // A key-value pair will have a string value
 // A directory will have a children map
+// node表示store里面的kv对，value为string，另还有其他path，parent和chidren等信息
 type node struct {
 	Path string
 
@@ -43,7 +44,7 @@ type node struct {
 	ModifiedIndex uint64
 
 	Parent *node `json:"-"` // should not encode this field! avoid circular dependency.
-
+	// 超时时间，ExpireTime为0表示永久Node
 	ExpireTime time.Time
 	Value      string           // for key-value pair
 	Children   map[string]*node // for directory
@@ -83,6 +84,7 @@ func newDir(store *store, nodePath string, createdIndex uint64, parent *node, ex
 // A hidden node will not be shown via get command under a directory
 // For example if we have /foo/_hidden and /foo/notHidden, get "/foo"
 // will only return /foo/notHidden
+// 隐藏路径
 func (n *node) IsHidden() bool {
 	_, name := path.Split(n.Path)
 

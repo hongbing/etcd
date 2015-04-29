@@ -27,7 +27,7 @@ type GetProxyURLs func() []string
 // NewHandler creates a new HTTP handler, listening on the given transport,
 // which will proxy requests to an etcd cluster.
 // The handler will periodically update its view of the cluster.
-//作为client请求代理，将client的请求转向cluster,
+//作为client请求代理，将client的请求转向cluster
 func NewHandler(t *http.Transport, urlsFunc GetProxyURLs) http.Handler {
 	return &reverseProxy{
 		director:  newDirector(urlsFunc),
