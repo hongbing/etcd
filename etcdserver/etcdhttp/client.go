@@ -87,7 +87,7 @@ func NewClientHandler(server *etcdserver.EtcdServer) http.Handler {
 		sec:         sec,
 		clusterInfo: server.Cluster,
 	}
-
+	// mux处理各种请求
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", http.NotFound)
 	mux.Handle(healthPath, healthHandler(server))
@@ -114,7 +114,7 @@ type keysHandler struct {
 	timeout     time.Duration
 }
 
-// 处理client和server之间的request
+// 处理client和server之间的HTTP request
 func (h *keysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !allowMethod(w, r.Method, "HEAD", "GET", "PUT", "POST", "DELETE") {
 		return
@@ -135,7 +135,7 @@ func (h *keysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeNoAuth(w)
 		return
 	}
-
+	// 真正处理request的函数DO
 	resp, err := h.server.Do(ctx, rr)
 	if err != nil {
 		err = trimErrorPrefix(err, etcdserver.StoreKeysPrefix)
@@ -148,6 +148,7 @@ func (h *keysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			// Should never be reached
 			log.Printf("error writing event: %v", err)
 		}
+	// key的watch event
 	case resp.Watcher != nil:
 		ctx, cancel := context.WithTimeout(context.Background(), defaultWatchTimeout)
 		defer cancel()
@@ -194,12 +195,14 @@ func (h *membersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		switch trimPrefix(r.URL.Path, membersPrefix) {
+		// 请求所有members的信息
 		case "":
 			mc := newMemberCollection(h.clusterInfo.Members())
 			w.Header().Set("Content-Type", "application/json")
 			if err := json.NewEncoder(w).Encode(mc); err != nil {
 				log.Printf("etcdhttp: %v", err)
 			}
+		// 请求leader的信息
 		case "leader":
 			id := h.server.Leader()
 			// leader id 等于0,表明在选举阶段还没有选出leader，此时客户端的请求失败
@@ -215,6 +218,7 @@ func (h *membersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		default:
 			writeError(w, httptypes.NewHTTPError(http.StatusNotFound, "Not found"))
 		}
+	// POST请求产生新的member
 	case "POST":
 		req := httptypes.MemberCreateRequest{}
 		if ok := unmarshalRequest(r, &req, w); !ok {
@@ -238,6 +242,7 @@ func (h *membersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			log.Printf("etcdhttp: %v", err)
 		}
+	// DELETE 删除member
 	case "DELETE":
 		id, ok := getID(r.URL.Path, w)
 		if !ok {
@@ -255,6 +260,7 @@ func (h *membersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		default:
 			w.WriteHeader(http.StatusNoContent)
 		}
+	// PUT 更新member的信息
 	case "PUT":
 		id, ok := getID(r.URL.Path, w)
 		if !ok {
@@ -332,6 +338,7 @@ func serveVars(w http.ResponseWriter, r *http.Request) {
 
 // TODO: change etcdserver to raft interface when we have it.
 //       add test for healthHeadler when we have the interface ready.
+// 检测etcdServer的健康状况,
 func healthHandler(server *etcdserver.EtcdServer) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !allowMethod(w, r.Method, "GET") {
@@ -344,6 +351,8 @@ func healthHandler(server *etcdserver.EtcdServer) http.HandlerFunc {
 		}
 
 		// wait for raft's progress
+		// 通过3次判断raft的index的值的变化来确定server的健康状况
+		// 也就是说正常情况下，raft的index在750ms之内是会变化的，这个index指的什么？
 		index := server.Index()
 		for i := 0; i < 3; i++ {
 			time.Sleep(250 * time.Millisecond)
@@ -369,6 +378,7 @@ func serveVersion(w http.ResponseWriter, r *http.Request) {
 // parseKeyRequest converts a received http.Request on keysPrefix to
 // a server Request, performing validation of supplied fields as appropriate.
 // If any validation fails, an empty Request and non-nil error is returned.
+// 将http request转换为etcdservpb.Request
 func parseKeyRequest(r *http.Request, clock clockwork.Clock) (etcdserverpb.Request, error) {
 	emptyReq := etcdserverpb.Request{}
 
@@ -532,6 +542,7 @@ func writeKeyEvent(w http.ResponseWriter, ev *store.Event, rt etcdserver.RaftTim
 	return json.NewEncoder(w).Encode(ev)
 }
 
+// 处理key watch event,循环检测当watcher的event channel中有event消息时，将该消息写回需要监听该key的client
 func handleKeyWatch(ctx context.Context, w http.ResponseWriter, wa store.Watcher, stream bool, rt etcdserver.RaftTimer) {
 	defer wa.Remove()
 	ech := wa.EventChan()
@@ -557,6 +568,7 @@ func handleKeyWatch(ctx context.Context, w http.ResponseWriter, wa store.Watcher
 		case <-ctx.Done():
 			// Timed out. net/http will close the connection for us, so nothing to do.
 			return
+		// 处理event channel中的消息
 		case ev, ok := <-ech:
 			if !ok {
 				// If the channel is closed this may be an indication of

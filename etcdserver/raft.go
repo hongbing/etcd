@@ -99,6 +99,7 @@ type raftNode struct {
 	transport rafthttp.Transporter
 
 	// Cache of the latest raft index and raft term the server has seen
+	// raft最近的index的缓存
 	index uint64
 	term  uint64
 	lead  uint64

@@ -32,7 +32,7 @@ func New() *List {
 	return &List{m: make(map[uint64]chan interface{})}
 }
 
-// 注册一个channel,channel作为map的value，key为id
+// 注册一个channel,channel size=1,channel是map结构的value，key为id,channel可以传任何值
 func (w *List) Register(id uint64) <-chan interface{} {
 	w.l.Lock()
 	defer w.l.Unlock()
