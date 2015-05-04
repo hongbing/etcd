@@ -199,6 +199,7 @@ func startEtcd(cfg *config) (<-chan struct{}, error) {
 	}
 	ph := etcdhttp.NewPeerHandler(s.Cluster, etcdserver.RaftTimer(s), s.RaftHandler())
 	// Start the peer server in a goroutine
+	// 处理peer节点之间的请求
 	for _, l := range plns {
 		go func(l net.Listener) {
 			log.Fatal(serveHTTP(l, ph, 5*time.Minute))
@@ -327,11 +328,11 @@ func startProxy(cfg *config) error {
 		go func() {
 			log.Print("proxy: listening for client requests on ", host)
 			/**
-			*  http.Serve:Serve accepts incoming HTTP connections on the listener l, 
-			*  creating a new service goroutine for each. The service goroutines read requests and then call handler to reply to them. 
-			* Handler is typically nil, in which case the DefaultServeMux is used. 
+			*  http.Serve:Serve accepts incoming HTTP connections on the listener l,
+			*  creating a new service goroutine for each. The service goroutines read requests and then call handler to reply to them.
+			* Handler is typically nil, in which case the DefaultServeMux is used.
 			* 接收listener上的incoming http连接，handler负责回复
-			*/
+			 */
 			log.Fatal(http.Serve(l, ph))
 		}()
 	}

@@ -37,7 +37,7 @@ var (
 
 // SoftState provides state that is useful for logging and debugging.
 // The state is volatile and does not need to be persisted to the WAL.
-// SoftState记录leader id 和自身的状态
+// SoftState记录leader id 和自身的角色
 type SoftState struct {
 	Lead uint64
 	// follower,candidate,leader
@@ -204,7 +204,7 @@ func RestartNode(c *Config) Node {
 
 // node is the canonical implementation of the Node interface
 type node struct {
-	// client-->server的propose消息
+	// client-->server的propose消息 channel
 	propc chan pb.Message
 	// 接收消息的channel
 	recvc chan pb.Message
@@ -277,9 +277,10 @@ func (n *node) run(r *raft) {
 
 		if lead != r.lead {
 			if r.hasLeader() {
+				// 首次启动，以raft的leader为leader
 				if lead == None {
 					raftLogger.Infof("raft.node: %x elected leader %x at term %d", r.id, r.lead, r.Term)
-				} else {
+				} else { // 变更leader
 					raftLogger.Infof("raft.node: %x changed leader from %x to %x at term %d", r.id, lead, r.lead, r.Term)
 				}
 				propc = n.propc

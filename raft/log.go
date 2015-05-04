@@ -22,7 +22,7 @@ import (
 )
 
 type raftLog struct {
-	// storage contains all stable entries since the last snapshot.
+	// storage contains all stable entries since the last snapshot.WAL的内存实现接口
 	storage Storage
 
 	// unstable contains all unstable entries and snapshot.

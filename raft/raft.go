@@ -140,7 +140,7 @@ type raft struct {
 	state StateType
 	//表示follower的投票key:follower id,value:是否投票
 	votes map[uint64]bool
-
+	// raft实例接收到的所有消息,包括vote，prop消息
 	msgs []pb.Message
 
 	// Leader的ID
@@ -484,7 +484,7 @@ func (r *raft) Step(m pb.Message) error {
 	switch {
 	case m.Term == 0:
 		// local message
-	// 处理来自term比自己大的消息,重置自己的term为m.term,设置leader为None
+	// 处理来自term比自己大的消息,重置自己的term为m.term
 	case m.Term > r.Term:
 		lead := m.From
 		// 如果是投票消息，先设置leader为None，在选举的时候会选出leader

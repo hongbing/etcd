@@ -30,6 +30,7 @@ import (
 	"github.com/coreos/etcd/wal"
 	"github.com/coreos/etcd/wal/walpb"
 )
+
 // log entry和snapshot的持久化存储
 type Storage interface {
 	// Save function saves ents and state to the underlying stable storage.

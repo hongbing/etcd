@@ -77,6 +77,7 @@ type apply struct {
 	done     chan struct{}
 }
 
+// 对raft实例的封装
 type raftNode struct {
 	raft.Node
 
@@ -108,7 +109,7 @@ type raftNode struct {
 	done    chan struct{}
 }
 
-// 启动raftNode
+// 处理raft实例的状态：ready,ticker,sync
 func (r *raftNode) run() {
 	r.stopped = make(chan struct{})
 	r.done = make(chan struct{})

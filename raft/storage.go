@@ -37,7 +37,7 @@ var ErrUnavailable = errors.New("requested entry at index is unavailable")
 // If any Storage method returns an error, the raft instance will
 // become inoperable and refuse to participate in elections; the
 // application is responsible for cleanup and recovery in this case.
-// WAL数据的内存实现
+// WAL数据的内存实现接口
 type Storage interface {
 	// InitialState returns the saved HardState and ConfState information.
 	InitialState() (pb.HardState, pb.ConfState, error)
@@ -74,7 +74,7 @@ type Storage interface {
 	 -----------------------------------------------------
 	      ^ ------------>			^
 	FirstIndex                                LastIndex
-	=ents[0].index + 1	       = ents[0].index + len(ents) -1  
+	=ents[0].index + 1	       = ents[0].index + len(ents) -1
 *
 */
 

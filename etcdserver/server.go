@@ -255,6 +255,7 @@ func NewServer(cfg *ServerConfig) (*EtcdServer, error) {
 		Name: cfg.Name,
 		ID:   id.String(),
 	}
+	// 设置自身node id为leaderid
 	lstats := stats.NewLeaderStats(id.String())
 
 	srv := &EtcdServer{
@@ -475,6 +476,10 @@ func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {
 		r.Method = "QGET"
 	}
 	switch r.Method {
+	/**
+	例如：curl -L http://127.0.0.1:2379/v2/keys/mykey -XPUT -d value="this is awesome"
+	处理client的KV数据请求，需要经过一致性处理
+	*/
 	case "POST", "PUT", "DELETE", "QGET":
 		data, err := r.Marshal()
 		if err != nil {

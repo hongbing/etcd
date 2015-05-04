@@ -35,6 +35,7 @@ enum MessageType {
 	//表示开启一轮新的选举 
 	MsgHup             = 0;
 	MsgBeat            = 1;
+	// 表示client对server的KV信息的请求消息
 	MsgProp            = 2;
 	// append entry message
 	MsgApp             = 3;

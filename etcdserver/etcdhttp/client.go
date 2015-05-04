@@ -44,6 +44,9 @@ import (
 )
 
 const (
+	/**
+	客户端request类型的前缀
+	*/
 	securityPrefix           = "/v2/security"
 	keysPrefix               = "/v2/keys"
 	deprecatedMachinesPrefix = "/v2/machines"
@@ -90,10 +93,13 @@ func NewClientHandler(server *etcdserver.EtcdServer) http.Handler {
 	// mux处理各种请求
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", http.NotFound)
+	// 处理以"/health"为前缀的请求
 	mux.Handle(healthPath, healthHandler(server))
 	mux.HandleFunc(versionPath, serveVersion)
+	// 处理以"/v2/keys"为前缀的请求
 	mux.Handle(keysPrefix, kh)
 	mux.Handle(keysPrefix+"/", kh)
+	// 处理以"/v2/stats"为前缀的请求
 	mux.HandleFunc(statsPrefix+"/store", sh.serveStore)
 	mux.HandleFunc(statsPrefix+"/self", sh.serveSelf)
 	mux.HandleFunc(statsPrefix+"/leader", sh.serveLeader)
@@ -114,7 +120,7 @@ type keysHandler struct {
 	timeout     time.Duration
 }
 
-// 处理client和server之间的HTTP request
+// 处理client和server之间的HTTP K-V request
 func (h *keysHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !allowMethod(w, r.Method, "HEAD", "GET", "PUT", "POST", "DELETE") {
 		return
