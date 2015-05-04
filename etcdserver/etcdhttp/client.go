@@ -176,7 +176,7 @@ func (h *deprecatedMachinesHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 	w.Write([]byte(strings.Join(endpoints, ", ")))
 }
 
-// raft实例处理器
+// client-->server 针对member的处理
 type membersHandler struct {
 	sec         *security.Store
 	server      etcdserver.Server
@@ -184,7 +184,7 @@ type membersHandler struct {
 	clock       clockwork.Clock
 }
 
-// 处理raft server之间的request
+// 处理client-->server的针对member的命令的request
 func (h *membersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !allowMethod(w, r.Method, "GET", "POST", "DELETE", "PUT") {
 		return

@@ -228,9 +228,7 @@ func (in *inflights) add(inflight uint64) {
 }
 
 // freeTo frees the inflights smaller or equal to the given `to` flight.
-
 // 释放给定的to参数之前（小于等于）的inflight。
-
 func (in *inflights) freeTo(to uint64) {
 	if in.count == 0 || to < in.buffer[in.start] {
 		// out of the left side of the window

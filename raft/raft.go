@@ -140,7 +140,7 @@ type raft struct {
 	state StateType
 	//表示follower的投票key:follower id,value:是否投票
 	votes map[uint64]bool
-	// raft实例接收到的所有消息,包括vote，prop消息
+	// msgs保存所有需要发送的消息
 	msgs []pb.Message
 
 	// Leader的ID
@@ -308,6 +308,7 @@ func (r *raft) sendHeartbeat(to uint64) {
 
 // bcastAppend sends RRPC, with entries to all peers that are not up-to-date
 // according to the progress recorded in r.prs.
+// 将消息发送到所有的peer中。
 func (r *raft) bcastAppend() {
 	for i := range r.prs {
 		if i == r.id {
@@ -438,6 +439,7 @@ func (r *raft) becomeLeader() {
 //当投票数等于N/2+1（N为server个数）时，升级为leader。
 func (r *raft) campaign() {
 	r.becomeCandidate()
+	// 如果只有一个node，自己给自己投票，占大多数票，自己变为leader
 	if r.q() == r.poll(r.id, true) {
 		r.becomeLeader()
 		return
@@ -452,7 +454,7 @@ func (r *raft) campaign() {
 	}
 }
 
-//记票，id为follower的id，
+//赞成票，id为follower的id，
 //v--->true：赞成票，false:反对票
 func (r *raft) poll(id uint64, v bool) (granted int) {
 	if v {
