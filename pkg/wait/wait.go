@@ -44,6 +44,7 @@ func (w *List) Register(id uint64) <-chan interface{} {
 	return ch
 }
 
+// 搭配Register使用,Register创建对应reqId的可写入1个元素的channel，Trigger向reqId的channel中写入数据。
 func (w *List) Trigger(id uint64, x interface{}) {
 	w.l.Lock()
 	ch := w.m[id]

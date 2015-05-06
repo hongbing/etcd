@@ -414,6 +414,7 @@ func (s *EtcdServer) run() {
 				if appliedi+1-firsti < uint64(len(apply.entries)) {
 					ents = apply.entries[appliedi+1-firsti:]
 				}
+				// 将apply的entry存储到store里
 				if appliedi, shouldstop = s.apply(ents, &confState); shouldstop {
 					go s.stopWithDelay(10*100*time.Millisecond, fmt.Errorf("the member has been permanently removed from the cluster"))
 				}
@@ -469,7 +470,7 @@ func (s *EtcdServer) StopNotify() <-chan struct{} { return s.done }
 // respective operation. Do will block until an action is performed or there is
 // an error.
 // 执行client-->server的request,如果Method是POST，PUT，DELETE，Quorum的GET，
-// 那么在执行操作之前会进行一致性处理,每个request带有一个resq id
+// 那么在执行操作之前会进行一致性处理,每个request都会生成一个resq id
 func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {
 	r.ID = s.reqIDGen.Next()
 	if r.Method == "GET" && r.Quorum {
@@ -485,6 +486,7 @@ func (s *EtcdServer) Do(ctx context.Context, r pb.Request) (Response, error) {
 		if err != nil {
 			return Response{}, err
 		}
+		// 注册该reqId的channel，等待Trigger方法向该channel中写数据
 		ch := s.w.Register(r.ID)
 
 		// TODO: benchmark the cost of time.Now()
@@ -643,7 +645,7 @@ func (s *EtcdServer) sync(timeout time.Duration) {
 // static clientURLs of the server.
 // The function keeps attempting to register until it succeeds,
 // or its server is stopped.
-// 注册server的member信息到cluster中，更新server的client urls
+// 注册server的clientUrls信息到cluster中，更新server的client urls
 func (s *EtcdServer) publish(retryInterval time.Duration) {
 	b, err := json.Marshal(s.attributes)
 	if err != nil {
